@@ -19,6 +19,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "8080:8080"
     depends_on:
