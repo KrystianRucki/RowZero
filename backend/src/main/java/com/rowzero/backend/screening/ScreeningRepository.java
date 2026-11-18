@@ -39,4 +39,5 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
             @Param("status") ScreeningStatus status,
             @Param("excludedScreeningId") Long excludedScreeningId
     );
+    boolean existsByHall_Id(Long hallId);
 }

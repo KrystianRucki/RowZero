@@ -21,4 +21,5 @@ public interface ScreeningSeatRepository
             WHERE ss.id = :id
             """)
     Optional<ScreeningSeat> findByIdForUpdate(@Param("id") Long id);
+    boolean existsBySeat_Id(Long seatId);
 }

@@ -9,4 +9,9 @@ public interface HallRepository extends JpaRepository<Hall, Long> {
     Optional<Hall> findByNameIgnoreCase(String name);
 
     boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(
+            String name,
+            Long id
+    );
 }
