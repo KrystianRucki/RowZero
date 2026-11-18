@@ -45,6 +45,30 @@ public class Movie {
     protected Movie() {
     }
 
+    public Movie(
+            Long tmdbId,
+            String title,
+            String originalTitle,
+            String overview,
+            Integer runtime,
+            LocalDate releaseDate,
+            String posterPath,
+            String backdropPath,
+            boolean visible,
+            OffsetDateTime lastSyncedAt
+    ) {
+        this.tmdbId = tmdbId;
+        this.title = title;
+        this.originalTitle = originalTitle;
+        this.overview = overview;
+        this.runtime = runtime;
+        this.releaseDate = releaseDate;
+        this.posterPath = posterPath;
+        this.backdropPath = backdropPath;
+        this.visible = visible;
+        this.lastSyncedAt = lastSyncedAt;
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,10 +111,6 @@ public class Movie {
 
     public OffsetDateTime getLastSyncedAt() {
         return lastSyncedAt;
-    }
-
-    public void setTmdbId(Long tmdbId) {
-        this.tmdbId = tmdbId;
     }
 
     public void setTitle(String title) {
