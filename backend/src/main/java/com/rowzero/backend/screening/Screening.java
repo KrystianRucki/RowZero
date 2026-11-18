@@ -39,13 +39,14 @@ public class Screening {
             Movie movie,
             Hall hall,
             OffsetDateTime startAt,
-            OffsetDateTime endAt
+            OffsetDateTime endAt,
+            ScreeningStatus status
     ) {
         this.movie = movie;
         this.hall = hall;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.status = ScreeningStatus.SCHEDULED;
+        this.status = status;
     }
 
     public Long getId() {

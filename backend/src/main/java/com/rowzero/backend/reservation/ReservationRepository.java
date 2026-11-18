@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Collection;
 
 public interface ReservationRepository
         extends JpaRepository<Reservation, Long> {
@@ -55,5 +56,14 @@ public interface ReservationRepository
             @Param("userId") Long userId,
             @Param("statuses") Collection<ReservationStatus> statuses,
             @Param("now") OffsetDateTime now
+    );
+    boolean existsByScreening_IdAndStatusIn(
+            Long screeningId,
+            Collection<ReservationStatus> statuses
+    );
+
+    List<Reservation> findByScreening_IdAndStatusIn(
+            Long screeningId,
+            Collection<ReservationStatus> statuses
     );
 }

@@ -8,29 +8,37 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
 
-public interface ScreeningRepository extends JpaRepository<Screening, Long> {
+public interface ScreeningRepository
+        extends JpaRepository<Screening, Long> {
 
-    Page<Screening> findByStatusAndStartAtAfterOrderByStartAtAsc(
+    Page<Screening> findByStatusAndStartAtAfter(
             ScreeningStatus status,
             OffsetDateTime startAt,
             Pageable pageable
     );
 
-    Page<Screening> findByMovie_IdAndStatusAndStartAtAfterOrderByStartAtAsc(
+    Page<Screening> findByMovie_IdAndStatusAndStartAtAfter(
             Long movieId,
             ScreeningStatus status,
             OffsetDateTime startAt,
             Pageable pageable
     );
 
+    boolean existsByHall_Id(Long hallId);
+
+    boolean existsByMovie_Id(Long movieId);
+
     @Query("""
-            SELECT COUNT(s) > 0
+            SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
             FROM Screening s
             WHERE s.hall.id = :hallId
               AND s.status = :status
               AND s.startAt < :endAt
               AND s.endAt > :startAt
-              AND (:excludedScreeningId IS NULL OR s.id <> :excludedScreeningId)
+              AND (
+                    :excludedScreeningId IS NULL
+                    OR s.id <> :excludedScreeningId
+              )
             """)
     boolean existsOverlappingScreening(
             @Param("hallId") Long hallId,
@@ -39,7 +47,4 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
             @Param("status") ScreeningStatus status,
             @Param("excludedScreeningId") Long excludedScreeningId
     );
-    boolean existsByHall_Id(Long hallId);
-    boolean existsByMovie_Id(Long movieId);
-
 }

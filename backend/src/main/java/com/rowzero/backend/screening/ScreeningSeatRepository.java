@@ -12,7 +12,11 @@ import java.util.Optional;
 public interface ScreeningSeatRepository
         extends JpaRepository<ScreeningSeat, Long> {
 
-    List<ScreeningSeat> findByScreening_Id(Long screeningId);
+    List<ScreeningSeat> findByScreening_IdOrderBySeat_RowLabelAscSeat_NumberAsc(
+            Long screeningId
+    );
+
+    boolean existsBySeat_Id(Long seatId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
@@ -20,6 +24,7 @@ public interface ScreeningSeatRepository
             FROM ScreeningSeat ss
             WHERE ss.id = :id
             """)
-    Optional<ScreeningSeat> findByIdForUpdate(@Param("id") Long id);
-    boolean existsBySeat_Id(Long seatId);
+    Optional<ScreeningSeat> findByIdForUpdate(
+            @Param("id") Long id
+    );
 }
