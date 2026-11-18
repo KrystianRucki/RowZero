@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 public interface ScreeningRepository
         extends JpaRepository<Screening, Long> {
@@ -22,6 +23,72 @@ public interface ScreeningRepository
             ScreeningStatus status,
             OffsetDateTime startAt,
             Pageable pageable
+    );
+
+    Page<Screening> findByStatusAndMovie_VisibleTrueAndStartAtAfter(
+            ScreeningStatus status,
+            OffsetDateTime startAt,
+            Pageable pageable
+    );
+
+    Page<Screening> findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+            Long movieId,
+            ScreeningStatus status,
+            OffsetDateTime startAt,
+            Pageable pageable
+    );
+
+    Page<Screening> findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+            Long hallId,
+            ScreeningStatus status,
+            OffsetDateTime startAt,
+            Pageable pageable
+    );
+
+    Page<Screening> findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+            Long movieId,
+            Long hallId,
+            ScreeningStatus status,
+            OffsetDateTime startAt,
+            Pageable pageable
+    );
+
+    Page<Screening> findByStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+            ScreeningStatus status,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
+    );
+
+    Page<Screening> findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+            Long movieId,
+            ScreeningStatus status,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
+    );
+
+    Page<Screening> findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+            Long hallId,
+            ScreeningStatus status,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
+    );
+
+    Page<Screening> findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+            Long movieId,
+            Long hallId,
+            ScreeningStatus status,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            Pageable pageable
+    );
+
+    Optional<Screening> findByIdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+            Long id,
+            ScreeningStatus status,
+            OffsetDateTime startAt
     );
 
     boolean existsByHall_Id(Long hallId);

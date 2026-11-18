@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.rowzero.backend.movie.dto.PublicMoviePageResponse;
+import com.rowzero.backend.movie.dto.PublicMovieResponse;
 
 @Service
 public class MovieService {
@@ -158,6 +160,63 @@ public class MovieService {
         }
 
         movieRepository.delete(movie);
+    }
+
+    @Transactional(readOnly = true)
+    public PublicMoviePageResponse getPublicMovies(
+            String search,
+            int page,
+            int size
+    ) {
+        String normalizedSearch =
+                search == null || search.isBlank()
+                        ? null
+                        : search.trim();
+
+        PageRequest pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                        Sort.Direction.ASC,
+                        "title"
+                )
+        );
+
+        Page<Movie> movies;
+
+        if (normalizedSearch != null) {
+            movies = movieRepository
+                    .findByVisibleTrueAndTitleContainingIgnoreCase(
+                            normalizedSearch,
+                            pageable
+                    );
+        } else {
+            movies = movieRepository
+                    .findByVisibleTrue(
+                            pageable
+                    );
+        }
+
+        Page<PublicMovieResponse> result =
+                movies.map(PublicMovieResponse::from);
+
+        return PublicMoviePageResponse.from(result);
+    }
+
+    @Transactional(readOnly = true)
+    public PublicMovieResponse getPublicMovie(
+            Long id
+    ) {
+        Movie movie = movieRepository
+                .findByIdAndVisibleTrue(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Movie not found"
+                        )
+                );
+
+        return PublicMovieResponse.from(movie);
     }
 
     private Movie getMovie(Long id) {

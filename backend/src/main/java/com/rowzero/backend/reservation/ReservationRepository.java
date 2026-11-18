@@ -7,12 +7,14 @@ import org.springframework.data.repository.query.Param;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Collection;
+import java.util.Set;
 
 public interface ReservationRepository
         extends JpaRepository<Reservation, Long> {
 
-    List<Reservation> findByUser_IdOrderByCreatedAtDesc(Long userId);
+    List<Reservation> findByUser_IdOrderByCreatedAtDesc(
+            Long userId
+    );
 
     boolean existsByScreeningSeat_IdAndStatusIn(
             Long screeningSeatId,
@@ -57,6 +59,7 @@ public interface ReservationRepository
             @Param("statuses") Collection<ReservationStatus> statuses,
             @Param("now") OffsetDateTime now
     );
+
     boolean existsByScreening_IdAndStatusIn(
             Long screeningId,
             Collection<ReservationStatus> statuses
@@ -65,5 +68,24 @@ public interface ReservationRepository
     List<Reservation> findByScreening_IdAndStatusIn(
             Long screeningId,
             Collection<ReservationStatus> statuses
+    );
+
+    @Query("""
+            SELECT r.screeningSeat.id
+            FROM Reservation r
+            WHERE r.screening.id = :screeningId
+              AND (
+                    r.status = :confirmedStatus
+                    OR (
+                        r.status = :heldStatus
+                        AND r.expiresAt > :now
+                    )
+              )
+            """)
+    Set<Long> findOccupiedScreeningSeatIds(
+            @Param("screeningId") Long screeningId,
+            @Param("confirmedStatus") ReservationStatus confirmedStatus,
+            @Param("heldStatus") ReservationStatus heldStatus,
+            @Param("now") OffsetDateTime now
     );
 }
