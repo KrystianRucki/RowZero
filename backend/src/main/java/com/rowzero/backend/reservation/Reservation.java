@@ -15,23 +15,44 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "screening_id", nullable = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "screening_id",
+            nullable = false
+    )
     private Screening screening;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "screening_seat_id", nullable = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "screening_seat_id",
+            nullable = false
+    )
     private ScreeningSeat screeningSeat;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(
+            name = "created_at",
+            nullable = false
+    )
     private OffsetDateTime createdAt;
 
     @Column(name = "expires_at")
@@ -50,15 +71,16 @@ public class Reservation {
             User user,
             Screening screening,
             ScreeningSeat screeningSeat,
+            ReservationStatus status,
             OffsetDateTime createdAt,
             OffsetDateTime expiresAt
     ) {
         this.user = user;
         this.screening = screening;
         this.screeningSeat = screeningSeat;
+        this.status = status;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
-        this.status = ReservationStatus.HELD;
     }
 
     public Long getId() {
@@ -97,19 +119,27 @@ public class Reservation {
         return cancelledAt;
     }
 
-    public void setStatus(ReservationStatus status) {
+    public void setStatus(
+            ReservationStatus status
+    ) {
         this.status = status;
     }
 
-    public void setExpiresAt(OffsetDateTime expiresAt) {
+    public void setExpiresAt(
+            OffsetDateTime expiresAt
+    ) {
         this.expiresAt = expiresAt;
     }
 
-    public void setConfirmedAt(OffsetDateTime confirmedAt) {
+    public void setConfirmedAt(
+            OffsetDateTime confirmedAt
+    ) {
         this.confirmedAt = confirmedAt;
     }
 
-    public void setCancelledAt(OffsetDateTime cancelledAt) {
+    public void setCancelledAt(
+            OffsetDateTime cancelledAt
+    ) {
         this.cancelledAt = cancelledAt;
     }
 }

@@ -1,12 +1,15 @@
 package com.rowzero.backend.reservation;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface ReservationRepository
@@ -27,6 +30,27 @@ public interface ReservationRepository
             Collection<ReservationStatus> statuses
     );
 
+    Optional<Reservation> findByScreeningSeat_IdAndStatusIn(
+            Long screeningSeatId,
+            Collection<ReservationStatus> statuses
+    );
+
+    List<Reservation> findByUser_IdAndStatusAndExpiresAtLessThanEqual(
+            Long userId,
+            ReservationStatus status,
+            OffsetDateTime now
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT r
+            FROM Reservation r
+            WHERE r.id = :id
+            """)
+    Optional<Reservation> findByIdForUpdate(
+            @Param("id") Long id
+    );
+
     @Query("""
             SELECT r
             FROM Reservation r
@@ -37,9 +61,12 @@ public interface ReservationRepository
             """)
     List<Reservation> findOverlappingReservations(
             @Param("userId") Long userId,
-            @Param("statuses") Collection<ReservationStatus> statuses,
-            @Param("newStart") OffsetDateTime newStart,
-            @Param("newEnd") OffsetDateTime newEnd
+            @Param("statuses")
+            Collection<ReservationStatus> statuses,
+            @Param("newStart")
+            OffsetDateTime newStart,
+            @Param("newEnd")
+            OffsetDateTime newEnd
     );
 
     List<Reservation> findByStatusAndExpiresAtLessThanEqual(
@@ -56,8 +83,10 @@ public interface ReservationRepository
             """)
     List<Reservation> findActiveFutureReservations(
             @Param("userId") Long userId,
-            @Param("statuses") Collection<ReservationStatus> statuses,
-            @Param("now") OffsetDateTime now
+            @Param("statuses")
+            Collection<ReservationStatus> statuses,
+            @Param("now")
+            OffsetDateTime now
     );
 
     boolean existsByScreening_IdAndStatusIn(
@@ -83,9 +112,16 @@ public interface ReservationRepository
               )
             """)
     Set<Long> findOccupiedScreeningSeatIds(
-            @Param("screeningId") Long screeningId,
-            @Param("confirmedStatus") ReservationStatus confirmedStatus,
-            @Param("heldStatus") ReservationStatus heldStatus,
-            @Param("now") OffsetDateTime now
+            @Param("screeningId")
+            Long screeningId,
+
+            @Param("confirmedStatus")
+            ReservationStatus confirmedStatus,
+
+            @Param("heldStatus")
+            ReservationStatus heldStatus,
+
+            @Param("now")
+            OffsetDateTime now
     );
 }
