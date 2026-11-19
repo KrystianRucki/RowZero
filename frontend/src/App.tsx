@@ -15,6 +15,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ReservationsPage } from './pages/ReservationsPage'
 import { SchedulePage } from './pages/SchedulePage'
+import { ScreeningDetailsPage } from './pages/ScreeningDetailsPage'
 
 function App() {
     return (
@@ -35,6 +36,13 @@ function App() {
                 <Route
                     path="/schedule"
                     element={<SchedulePage />}
+                />
+
+                <Route
+                    path="/screenings/:id"
+                    element={
+                        <ScreeningDetailsPage />
+                    }
                 />
 
                 <Route

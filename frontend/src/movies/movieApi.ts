@@ -38,3 +38,15 @@ export function getMovies({
         },
     )
 }
+
+export function getMovie(
+    id: number,
+    signal?: AbortSignal,
+) {
+    return apiRequest<Movie>(
+        `/api/movies/${id}`,
+        {
+            signal,
+        },
+    )
+}

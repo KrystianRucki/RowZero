@@ -5,16 +5,6 @@ import {
 } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 
-function navLinkClassName({
-                              isActive,
-                          }: {
-    isActive: boolean
-}) {
-    return isActive
-        ? 'main-nav__link main-nav__link--active'
-        : 'main-nav__link'
-}
-
 export function AppHeader() {
     const navigate = useNavigate()
     const location = useLocation()
@@ -29,6 +19,13 @@ export function AppHeader() {
         location.pathname === '/' ||
         location.pathname.startsWith(
             '/movies/',
+        )
+
+    const scheduleActive =
+        location.pathname ===
+        '/schedule' ||
+        location.pathname.startsWith(
+            '/screenings/',
         )
 
     function handleLogout() {
@@ -66,7 +63,16 @@ export function AppHeader() {
 
                     <NavLink
                         to="/schedule"
-                        className={navLinkClassName}
+                        className={
+                            scheduleActive
+                                ? 'main-nav__link main-nav__link--active'
+                                : 'main-nav__link'
+                        }
+                        aria-current={
+                            scheduleActive
+                                ? 'page'
+                                : undefined
+                        }
                     >
                         Schedule
                     </NavLink>
@@ -75,8 +81,12 @@ export function AppHeader() {
                         <>
                             <NavLink
                                 to="/reservations"
-                                className={
-                                    navLinkClassName
+                                className={({
+                                                isActive,
+                                            }) =>
+                                    isActive
+                                        ? 'main-nav__link main-nav__link--active'
+                                        : 'main-nav__link'
                                 }
                             >
                                 My reservations
@@ -84,8 +94,12 @@ export function AppHeader() {
 
                             <NavLink
                                 to="/notifications"
-                                className={
-                                    navLinkClassName
+                                className={({
+                                                isActive,
+                                            }) =>
+                                    isActive
+                                        ? 'main-nav__link main-nav__link--active'
+                                        : 'main-nav__link'
                                 }
                             >
                                 Notifications
