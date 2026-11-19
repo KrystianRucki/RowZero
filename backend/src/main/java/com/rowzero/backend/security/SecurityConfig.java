@@ -7,7 +7,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,7 +14,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,7 +33,9 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtAuthenticationConverter jwtAuthenticationConverter
+            JwtAuthenticationConverter jwtAuthenticationConverter,
+            RestAuthenticationEntryPoint authenticationEntryPoint,
+            RestAccessDeniedHandler accessDeniedHandler
     ) throws Exception {
 
         http
@@ -42,6 +47,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
+                )
+
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint(
+                                        authenticationEntryPoint
+                                )
+                                .accessDeniedHandler(
+                                        accessDeniedHandler
+                                )
                 )
 
                 .authorizeHttpRequests(auth -> auth
@@ -69,11 +84,18 @@ public class SecurityConfig {
                 )
 
                 .oauth2ResourceServer(oauth ->
-                        oauth.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(
-                                        jwtAuthenticationConverter
+                        oauth
+                                .authenticationEntryPoint(
+                                        authenticationEntryPoint
                                 )
-                        )
+                                .accessDeniedHandler(
+                                        accessDeniedHandler
+                                )
+                                .jwt(jwt ->
+                                        jwt.jwtAuthenticationConverter(
+                                                jwtAuthenticationConverter
+                                        )
+                                )
                 );
 
         return http.build();
@@ -91,22 +113,33 @@ public class SecurityConfig {
             PasswordEncoder passwordEncoder
     ) {
         DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(userDetailsService);
+                new DaoAuthenticationProvider(
+                        userDetailsService
+                );
 
-        provider.setPasswordEncoder(passwordEncoder);
+        provider.setPasswordEncoder(
+                passwordEncoder
+        );
 
-        return new ProviderManager(provider);
+        return new ProviderManager(
+                provider
+        );
     }
 
     @Bean
     SecretKey jwtSecretKey(
-            @Value("${app.security.jwt.secret}") String encodedSecret
+            @Value("${app.security.jwt.secret}")
+            String encodedSecret
     ) {
         byte[] keyBytes;
 
         try {
-            keyBytes = Base64.getDecoder().decode(encodedSecret);
+            keyBytes =
+                    Base64.getDecoder()
+                            .decode(encodedSecret);
+
         } catch (IllegalArgumentException exception) {
+
             throw new IllegalStateException(
                     "JWT_SECRET must be Base64 encoded",
                     exception
@@ -119,14 +152,21 @@ public class SecurityConfig {
             );
         }
 
-        return new SecretKeySpec(keyBytes, "HmacSHA256");
+        return new SecretKeySpec(
+                keyBytes,
+                "HmacSHA256"
+        );
     }
 
     @Bean
-    JwtEncoder jwtEncoder(SecretKey secretKey) {
+    JwtEncoder jwtEncoder(
+            SecretKey secretKey
+    ) {
         return NimbusJwtEncoder
                 .withSecretKey(secretKey)
-                .algorithm(MacAlgorithm.HS256)
+                .algorithm(
+                        MacAlgorithm.HS256
+                )
                 .build();
     }
 
@@ -134,16 +174,23 @@ public class SecurityConfig {
     JwtDecoder jwtDecoder(
             SecretKey secretKey,
             EnabledUserJwtValidator enabledUserJwtValidator,
-            @Value("${app.security.jwt.issuer}") String issuer
+            @Value("${app.security.jwt.issuer}")
+            String issuer
     ) {
-        NimbusJwtDecoder decoder = NimbusJwtDecoder
-                .withSecretKey(secretKey)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
+        NimbusJwtDecoder decoder =
+                NimbusJwtDecoder
+                        .withSecretKey(secretKey)
+                        .macAlgorithm(
+                                MacAlgorithm.HS256
+                        )
+                        .build();
 
         decoder.setJwtValidator(
                 new DelegatingOAuth2TokenValidator<>(
-                        JwtValidators.createDefaultWithIssuer(issuer),
+                        JwtValidators
+                                .createDefaultWithIssuer(
+                                        issuer
+                                ),
                         enabledUserJwtValidator
                 )
         );
@@ -157,15 +204,21 @@ public class SecurityConfig {
         JwtGrantedAuthoritiesConverter authoritiesConverter =
                 new JwtGrantedAuthoritiesConverter();
 
-        authoritiesConverter.setAuthoritiesClaimName("roles");
-        authoritiesConverter.setAuthorityPrefix("ROLE_");
+        authoritiesConverter.setAuthoritiesClaimName(
+                "roles"
+        );
+
+        authoritiesConverter.setAuthorityPrefix(
+                "ROLE_"
+        );
 
         JwtAuthenticationConverter authenticationConverter =
                 new JwtAuthenticationConverter();
 
-        authenticationConverter.setJwtGrantedAuthoritiesConverter(
-                authoritiesConverter
-        );
+        authenticationConverter
+                .setJwtGrantedAuthoritiesConverter(
+                        authoritiesConverter
+                );
 
         return authenticationConverter;
     }
