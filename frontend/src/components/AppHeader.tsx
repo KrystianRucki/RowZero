@@ -1,5 +1,6 @@
 import {
     NavLink,
+    useLocation,
     useNavigate,
 } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
@@ -16,12 +17,19 @@ function navLinkClassName({
 
 export function AppHeader() {
     const navigate = useNavigate()
+    const location = useLocation()
 
     const {
         user,
         isAuthenticated,
         logout,
     } = useAuth()
+
+    const moviesActive =
+        location.pathname === '/' ||
+        location.pathname.startsWith(
+            '/movies/',
+        )
 
     function handleLogout() {
         logout()
@@ -42,7 +50,16 @@ export function AppHeader() {
                     <NavLink
                         to="/"
                         end
-                        className={navLinkClassName}
+                        className={
+                            moviesActive
+                                ? 'main-nav__link main-nav__link--active'
+                                : 'main-nav__link'
+                        }
+                        aria-current={
+                            moviesActive
+                                ? 'page'
+                                : undefined
+                        }
                     >
                         Movies
                     </NavLink>
@@ -58,14 +75,18 @@ export function AppHeader() {
                         <>
                             <NavLink
                                 to="/reservations"
-                                className={navLinkClassName}
+                                className={
+                                    navLinkClassName
+                                }
                             >
                                 My reservations
                             </NavLink>
 
                             <NavLink
                                 to="/notifications"
-                                className={navLinkClassName}
+                                className={
+                                    navLinkClassName
+                                }
                             >
                                 Notifications
                             </NavLink>
@@ -94,14 +115,15 @@ export function AppHeader() {
 
                     {isAuthenticated && (
                         <>
-                            {user?.role === 'ADMIN' && (
-                                <NavLink
-                                    to="/admin"
-                                    className="header-link"
-                                >
-                                    Admin
-                                </NavLink>
-                            )}
+                            {user?.role ===
+                                'ADMIN' && (
+                                    <NavLink
+                                        to="/admin"
+                                        className="header-link"
+                                    >
+                                        Admin
+                                    </NavLink>
+                                )}
 
                             <NavLink
                                 to="/account"
@@ -116,7 +138,9 @@ export function AppHeader() {
                             <button
                                 type="button"
                                 className="button button--secondary"
-                                onClick={handleLogout}
+                                onClick={
+                                    handleLogout
+                                }
                             >
                                 Log out
                             </button>

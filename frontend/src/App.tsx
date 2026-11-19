@@ -9,6 +9,7 @@ import { AdminPage } from './pages/AdminPage'
 import { ForbiddenPage } from './pages/ForbiddenPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
+import { MovieDetailsPage } from './pages/MovieDetailsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -22,6 +23,13 @@ function App() {
                 <Route
                     path="/"
                     element={<HomePage />}
+                />
+
+                <Route
+                    path="/movies/:id"
+                    element={
+                        <MovieDetailsPage />
+                    }
                 />
 
                 <Route
@@ -44,7 +52,9 @@ function App() {
                     element={<ForbiddenPage />}
                 />
 
-                <Route element={<ProtectedRoute />}>
+                <Route
+                    element={<ProtectedRoute />}
+                >
                     <Route
                         path="/account"
                         element={<AccountPage />}
@@ -52,12 +62,16 @@ function App() {
 
                     <Route
                         path="/reservations"
-                        element={<ReservationsPage />}
+                        element={
+                            <ReservationsPage />
+                        }
                     />
 
                     <Route
                         path="/notifications"
-                        element={<NotificationsPage />}
+                        element={
+                            <NotificationsPage />
+                        }
                     />
                 </Route>
 
