@@ -1,59 +1,18 @@
-import { Link } from 'react-router-dom'
-import { useAuth } from '../auth/useAuth'
-
 export function HomePage() {
-    const {
-        user,
-        isAuthenticated,
-        logout,
-    } = useAuth()
-
     return (
-        <main>
-            <h1>RowZero</h1>
+        <section className="page">
+            <div className="page-heading page-heading--large">
+                <p className="eyebrow">
+                    RowZero Film Festival
+                </p>
 
-            {!isAuthenticated && (
-                <nav>
-                    <Link to="/login">
-                        Login
-                    </Link>
+                <h1>Discover the programme</h1>
 
-                    {' | '}
-
-                    <Link to="/register">
-                        Register
-                    </Link>
-                </nav>
-            )}
-
-            {isAuthenticated && (
-                <>
-                    <p>
-                        Logged in as {user?.email}
-                    </p>
-
-                    <nav>
-                        <Link to="/account">
-                            My account
-                        </Link>
-
-                        {user?.role === 'ADMIN' && (
-                            <>
-                                {' | '}
-                                <Link to="/admin">
-                                    Admin panel
-                                </Link>
-                            </>
-                        )}
-
-                        {' | '}
-
-                        <button onClick={logout}>
-                            Logout
-                        </button>
-                    </nav>
-                </>
-            )}
-        </main>
+                <p>
+                    Explore films showing at the
+                    festival and reserve your seat.
+                </p>
+            </div>
+        </section>
     )
 }
