@@ -1,10 +1,13 @@
 package com.rowzero.backend.user;
 
+import com.rowzero.backend.notification.NotificationType;
+import com.rowzero.backend.notification.event.ReservationNotificationEvent;
 import com.rowzero.backend.reservation.Reservation;
 import com.rowzero.backend.reservation.ReservationRepository;
 import com.rowzero.backend.reservation.ReservationStatus;
 import com.rowzero.backend.user.dto.AdminUserPageResponse;
 import com.rowzero.backend.user.dto.AdminUserResponse;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,13 +25,16 @@ public class AdminUserService {
 
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AdminUserService(
             UserRepository userRepository,
-            ReservationRepository reservationRepository
+            ReservationRepository reservationRepository,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.userRepository = userRepository;
         this.reservationRepository = reservationRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional(readOnly = true)
@@ -46,12 +52,16 @@ public class AdminUserService {
         PageRequest pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Direction.DESC, "createdAt")
+                Sort.by(
+                        Sort.Direction.DESC,
+                        "createdAt"
+                )
         );
 
         Page<User> users;
 
         if (normalizedSearch != null && enabled != null) {
+
             users = userRepository
                     .findByEmailContainingIgnoreCaseAndEnabled(
                             normalizedSearch,
@@ -60,6 +70,7 @@ public class AdminUserService {
                     );
 
         } else if (normalizedSearch != null) {
+
             users = userRepository
                     .findByEmailContainingIgnoreCase(
                             normalizedSearch,
@@ -67,6 +78,7 @@ public class AdminUserService {
                     );
 
         } else if (enabled != null) {
+
             users = userRepository
                     .findByEnabled(
                             enabled,
@@ -74,19 +86,27 @@ public class AdminUserService {
                     );
 
         } else {
-            users = userRepository.findAll(pageable);
+
+            users = userRepository
+                    .findAll(pageable);
         }
 
         Page<AdminUserResponse> result =
-                users.map(AdminUserResponse::from);
+                users.map(
+                        AdminUserResponse::from
+                );
 
-        return AdminUserPageResponse.from(result);
+        return AdminUserPageResponse.from(
+                result
+        );
     }
 
     @Transactional(readOnly = true)
-    public AdminUserResponse getUser(Long id) {
-
-        User user = userRepository.findById(id)
+    public AdminUserResponse getUser(
+            Long id
+    ) {
+        User user = userRepository
+                .findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -94,7 +114,9 @@ public class AdminUserService {
                         )
                 );
 
-        return AdminUserResponse.from(user);
+        return AdminUserResponse.from(
+                user
+        );
     }
 
     @Transactional
@@ -118,24 +140,38 @@ public class AdminUserService {
             );
         }
 
+        if (user.isEnabled() == enabled) {
+            return AdminUserResponse.from(
+                    user
+            );
+        }
+
         if (!enabled) {
-            cancelFutureActiveReservations(user);
+            cancelFutureActiveReservations(
+                    user
+            );
         }
 
         user.setEnabled(enabled);
 
-        return AdminUserResponse.from(user);
+        return AdminUserResponse.from(
+                user
+        );
     }
 
-    private void cancelFutureActiveReservations(User user) {
-
+    private void cancelFutureActiveReservations(
+            User user
+    ) {
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
-        List<ReservationStatus> activeStatuses = List.of(
-                ReservationStatus.HELD,
-                ReservationStatus.CONFIRMED
-        );
+        List<ReservationStatus> activeStatuses =
+                List.of(
+                        ReservationStatus.HELD,
+                        ReservationStatus.CONFIRMED
+                );
 
         List<Reservation> reservations =
                 reservationRepository
@@ -146,11 +182,64 @@ public class AdminUserService {
                         );
 
         for (Reservation reservation : reservations) {
+
+            if (reservation.getStatus()
+                    == ReservationStatus.HELD
+                    && reservation.getExpiresAt() != null
+                    && !reservation
+                    .getExpiresAt()
+                    .isAfter(now)) {
+
+                reservation.setStatus(
+                        ReservationStatus.EXPIRED
+                );
+
+                publishReservationNotification(
+                        reservation,
+                        NotificationType.RESERVATION_EXPIRED,
+                        "Your reservation for "
+                                + reservation
+                                .getScreening()
+                                .getMovie()
+                                .getTitle()
+                                + " has expired."
+                );
+
+                continue;
+            }
+
             reservation.setStatus(
                     ReservationStatus.CANCELLED
             );
 
             reservation.setCancelledAt(now);
+
+            publishReservationNotification(
+                    reservation,
+                    NotificationType.RESERVATION_CANCELLED,
+                    "Your reservation for "
+                            + reservation
+                            .getScreening()
+                            .getMovie()
+                            .getTitle()
+                            + " has been cancelled because your account was disabled."
+            );
         }
+    }
+
+    private void publishReservationNotification(
+            Reservation reservation,
+            NotificationType type,
+            String message
+    ) {
+        eventPublisher.publishEvent(
+                new ReservationNotificationEvent(
+                        reservation
+                                .getUser()
+                                .getId(),
+                        type,
+                        message
+                )
+        );
     }
 }

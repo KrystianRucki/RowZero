@@ -13,18 +13,30 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType type;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String message;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(
+            name = "created_at",
+            nullable = false
+    )
     private OffsetDateTime createdAt;
 
     @Column(name = "read_at")
@@ -69,7 +81,9 @@ public class Notification {
         return readAt;
     }
 
-    public void setReadAt(OffsetDateTime readAt) {
+    public void setReadAt(
+            OffsetDateTime readAt
+    ) {
         this.readAt = readAt;
     }
 }

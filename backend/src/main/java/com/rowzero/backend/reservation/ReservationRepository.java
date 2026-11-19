@@ -124,4 +124,20 @@ public interface ReservationRepository
             @Param("now")
             OffsetDateTime now
     );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT r
+            FROM Reservation r
+            WHERE r.status = :status
+              AND r.expiresAt <= :now
+            ORDER BY r.expiresAt ASC
+            """)
+    List<Reservation> findExpiredHoldsForUpdate(
+            @Param("status")
+            ReservationStatus status,
+
+            @Param("now")
+            OffsetDateTime now
+    );
 }

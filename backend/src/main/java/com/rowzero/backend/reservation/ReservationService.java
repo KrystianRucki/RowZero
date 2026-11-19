@@ -1,5 +1,7 @@
 package com.rowzero.backend.reservation;
 
+import com.rowzero.backend.notification.NotificationType;
+import com.rowzero.backend.notification.event.ReservationNotificationEvent;
 import com.rowzero.backend.reservation.dto.CreateReservationRequest;
 import com.rowzero.backend.reservation.dto.ReservationResponse;
 import com.rowzero.backend.screening.Screening;
@@ -8,6 +10,7 @@ import com.rowzero.backend.screening.ScreeningSeatRepository;
 import com.rowzero.backend.screening.ScreeningStatus;
 import com.rowzero.backend.user.User;
 import com.rowzero.backend.user.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,24 +26,27 @@ public class ReservationService {
 
     private static final int HOLD_MINUTES = 10;
 
-    private static final List<ReservationStatus>
-            ACTIVE_STATUSES = List.of(
-            ReservationStatus.HELD,
-            ReservationStatus.CONFIRMED
-    );
+    private static final List<ReservationStatus> ACTIVE_STATUSES =
+            List.of(
+                    ReservationStatus.HELD,
+                    ReservationStatus.CONFIRMED
+            );
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final ScreeningSeatRepository screeningSeatRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             UserRepository userRepository,
-            ScreeningSeatRepository screeningSeatRepository
+            ScreeningSeatRepository screeningSeatRepository,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.screeningSeatRepository = screeningSeatRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -59,12 +65,10 @@ public class ReservationService {
                                 "User not found"
                         )
                 );
-
         expireUserHolds(
                 user.getId(),
                 now
         );
-
         ScreeningSeat screeningSeat =
                 screeningSeatRepository
                         .findByIdForUpdate(
@@ -114,7 +118,6 @@ public class ReservationService {
                     "User already has a reservation for this screening"
             );
         }
-
         List<Reservation> overlapping =
                 reservationRepository
                         .findOverlappingReservations(
@@ -135,7 +138,6 @@ public class ReservationService {
                 now.plusMinutes(
                         HOLD_MINUTES
                 );
-
         if (expiresAt.isAfter(
                 screening.getStartAt()
         )) {
@@ -173,7 +175,10 @@ public class ReservationService {
         }
     }
 
-    @Transactional
+    @Transactional(
+            noRollbackFor =
+                    ReservationExpiredConflictException.class
+    )
     public ReservationResponse confirm(
             Long userId,
             Long reservationId
@@ -240,12 +245,11 @@ public class ReservationService {
                 .getExpiresAt()
                 .isAfter(now)) {
 
-            reservation.setStatus(
-                    ReservationStatus.EXPIRED
+            markAsExpired(
+                    reservation
             );
 
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ReservationExpiredConflictException(
                     "Reservation hold has expired"
             );
         }
@@ -255,12 +259,11 @@ public class ReservationService {
                 .getStartAt()
                 .isAfter(now)) {
 
-            reservation.setStatus(
-                    ReservationStatus.EXPIRED
+            markAsExpired(
+                    reservation
             );
 
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ReservationExpiredConflictException(
                     "Screening has already started"
             );
         }
@@ -271,12 +274,29 @@ public class ReservationService {
 
         reservation.setConfirmedAt(now);
 
+        eventPublisher.publishEvent(
+                new ReservationNotificationEvent(
+                        userId,
+                        NotificationType
+                                .RESERVATION_CONFIRMED,
+                        "Your reservation for "
+                                + reservation
+                                .getScreening()
+                                .getMovie()
+                                .getTitle()
+                                + " has been confirmed."
+                )
+        );
+
         return ReservationResponse.from(
                 reservation
         );
     }
 
-    @Transactional
+    @Transactional(
+            noRollbackFor =
+                    ReservationExpiredConflictException.class
+    )
     public ReservationResponse cancel(
             Long userId,
             Long reservationId
@@ -336,12 +356,11 @@ public class ReservationService {
                 .getExpiresAt()
                 .isAfter(now)) {
 
-            reservation.setStatus(
-                    ReservationStatus.EXPIRED
+            markAsExpired(
+                    reservation
             );
 
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ReservationExpiredConflictException(
                     "Reservation hold has expired"
             );
         }
@@ -362,6 +381,20 @@ public class ReservationService {
         );
 
         reservation.setCancelledAt(now);
+
+        eventPublisher.publishEvent(
+                new ReservationNotificationEvent(
+                        userId,
+                        NotificationType
+                                .RESERVATION_CANCELLED,
+                        "Your reservation for "
+                                + reservation
+                                .getScreening()
+                                .getMovie()
+                                .getTitle()
+                                + " has been cancelled."
+                )
+        );
 
         return ReservationResponse.from(
                 reservation
@@ -443,8 +476,8 @@ public class ReservationService {
                 .getExpiresAt()
                 .isAfter(now)) {
 
-            reservation.setStatus(
-                    ReservationStatus.EXPIRED
+            markAsExpired(
+                    reservation
             );
         }
 
@@ -516,8 +549,9 @@ public class ReservationService {
                         );
 
         for (Reservation reservation : expired) {
-            reservation.setStatus(
-                    ReservationStatus.EXPIRED
+
+            markAsExpired(
+                    reservation
             );
         }
 
@@ -545,12 +579,56 @@ public class ReservationService {
                             .getExpiresAt()
                             .isAfter(now)) {
 
-                        reservation.setStatus(
-                                ReservationStatus.EXPIRED
+                        markAsExpired(
+                                reservation
                         );
 
                         reservationRepository.flush();
                     }
                 });
+    }
+
+    private void markAsExpired(
+            Reservation reservation
+    ) {
+        if (reservation.getStatus()
+                != ReservationStatus.HELD) {
+            return;
+        }
+
+        reservation.setStatus(
+                ReservationStatus.EXPIRED
+        );
+
+        eventPublisher.publishEvent(
+                new ReservationNotificationEvent(
+                        reservation
+                                .getUser()
+                                .getId(),
+
+                        NotificationType
+                                .RESERVATION_EXPIRED,
+
+                        "Your reservation for "
+                                + reservation
+                                .getScreening()
+                                .getMovie()
+                                .getTitle()
+                                + " has expired."
+                )
+        );
+    }
+
+    private static final class ReservationExpiredConflictException
+            extends ResponseStatusException {
+
+        private ReservationExpiredConflictException(
+                String reason
+        ) {
+            super(
+                    HttpStatus.CONFLICT,
+                    reason
+            );
+        }
     }
 }

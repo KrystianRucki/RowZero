@@ -6,6 +6,8 @@ import com.rowzero.backend.hall.Seat;
 import com.rowzero.backend.hall.SeatRepository;
 import com.rowzero.backend.movie.Movie;
 import com.rowzero.backend.movie.MovieRepository;
+import com.rowzero.backend.notification.NotificationType;
+import com.rowzero.backend.notification.event.ReservationNotificationEvent;
 import com.rowzero.backend.reservation.Reservation;
 import com.rowzero.backend.reservation.ReservationRepository;
 import com.rowzero.backend.reservation.ReservationStatus;
@@ -16,6 +18,7 @@ import com.rowzero.backend.screening.dto.ScreeningResponse;
 import com.rowzero.backend.screening.dto.ScreeningSeatResponse;
 import com.rowzero.backend.screening.dto.UpdateScreeningRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -40,6 +43,7 @@ public class ScreeningService {
     private final HallRepository hallRepository;
     private final SeatRepository seatRepository;
     private final ReservationRepository reservationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ZoneId festivalZoneId;
 
@@ -50,6 +54,7 @@ public class ScreeningService {
             HallRepository hallRepository,
             SeatRepository seatRepository,
             ReservationRepository reservationRepository,
+            ApplicationEventPublisher eventPublisher,
             @Value("${app.festival.time-zone:Europe/Warsaw}")
             String festivalTimeZone
     ) {
@@ -59,11 +64,9 @@ public class ScreeningService {
         this.hallRepository = hallRepository;
         this.seatRepository = seatRepository;
         this.reservationRepository = reservationRepository;
-
+        this.eventPublisher = eventPublisher;
         this.festivalZoneId = ZoneId.of(festivalTimeZone);
     }
-
-    // ADMIN
 
     @Transactional(readOnly = true)
     public ScreeningPageResponse getAll(
@@ -89,7 +92,6 @@ public class ScreeningService {
 
     @Transactional(readOnly = true)
     public ScreeningResponse getById(Long id) {
-
         Screening screening = getScreening(id);
 
         return ScreeningResponse.from(screening);
@@ -220,9 +222,14 @@ public class ScreeningService {
         }
 
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
-        if (!screening.getStartAt().isAfter(now)) {
+        if (!screening
+                .getStartAt()
+                .isAfter(now)) {
+
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Screening that has already started cannot be modified"
@@ -270,7 +277,9 @@ public class ScreeningService {
         boolean overlap =
                 screeningRepository
                         .existsOverlappingScreening(
-                                screening.getHall().getId(),
+                                screening
+                                        .getHall()
+                                        .getId(),
                                 request.startAt(),
                                 request.endAt(),
                                 ScreeningStatus.SCHEDULED,
@@ -285,30 +294,39 @@ public class ScreeningService {
         }
 
         screening.setMovie(movie);
+
         screening.setStartAt(
                 request.startAt()
         );
+
         screening.setEndAt(
                 request.endAt()
         );
 
-        return ScreeningResponse.from(screening);
+        return ScreeningResponse.from(
+                screening
+        );
     }
 
     @Transactional
     public void cancel(Long id) {
-
         Screening screening = getScreening(id);
 
         if (screening.getStatus()
                 == ScreeningStatus.CANCELLED) {
+
             return;
         }
 
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
-        if (!screening.getStartAt().isAfter(now)) {
+        if (!screening
+                .getStartAt()
+                .isAfter(now)) {
+
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Screening that has already started cannot be cancelled"
@@ -334,15 +352,49 @@ public class ScreeningService {
 
         for (Reservation reservation : reservations) {
 
+            if (reservation.getStatus()
+                    == ReservationStatus.HELD
+                    && reservation.getExpiresAt() != null
+                    && !reservation
+                    .getExpiresAt()
+                    .isAfter(now)) {
+
+                reservation.setStatus(
+                        ReservationStatus.EXPIRED
+                );
+
+                publishReservationNotification(
+                        reservation,
+                        NotificationType.RESERVATION_EXPIRED,
+                        "Your reservation for "
+                                + reservation
+                                .getScreening()
+                                .getMovie()
+                                .getTitle()
+                                + " has expired."
+                );
+
+                continue;
+            }
+
             reservation.setStatus(
                     ReservationStatus.CANCELLED
             );
 
             reservation.setCancelledAt(now);
+
+            publishReservationNotification(
+                    reservation,
+                    NotificationType.RESERVATION_CANCELLED,
+                    "Your reservation for "
+                            + reservation
+                            .getScreening()
+                            .getMovie()
+                            .getTitle()
+                            + " has been cancelled because the screening was cancelled."
+            );
         }
     }
-
-    // PUBLIC
 
     @Transactional(readOnly = true)
     public ScreeningPageResponse getPublicScreenings(
@@ -352,62 +404,69 @@ public class ScreeningService {
             int page,
             int size
     ) {
-        PageRequest pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(
-                        Sort.Direction.ASC,
-                        "startAt"
-                )
-        );
+        PageRequest pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        Sort.by(
+                                Sort.Direction.ASC,
+                                "startAt"
+                        )
+                );
 
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
         Page<Screening> screenings;
 
-        // Bez filtra daty
         if (date == null) {
 
-            if (movieId != null && hallId != null) {
+            if (movieId != null
+                    && hallId != null) {
 
-                screenings = screeningRepository
-                        .findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
-                                movieId,
-                                hallId,
-                                ScreeningStatus.SCHEDULED,
-                                now,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+                                        movieId,
+                                        hallId,
+                                        ScreeningStatus.SCHEDULED,
+                                        now,
+                                        pageable
+                                );
 
             } else if (movieId != null) {
 
-                screenings = screeningRepository
-                        .findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
-                                movieId,
-                                ScreeningStatus.SCHEDULED,
-                                now,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+                                        movieId,
+                                        ScreeningStatus.SCHEDULED,
+                                        now,
+                                        pageable
+                                );
 
             } else if (hallId != null) {
 
-                screenings = screeningRepository
-                        .findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
-                                hallId,
-                                ScreeningStatus.SCHEDULED,
-                                now,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
+                                        hallId,
+                                        ScreeningStatus.SCHEDULED,
+                                        now,
+                                        pageable
+                                );
 
             } else {
 
-                screenings = screeningRepository
-                        .findByStatusAndMovie_VisibleTrueAndStartAtAfter(
-                                ScreeningStatus.SCHEDULED,
-                                now,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByStatusAndMovie_VisibleTrueAndStartAtAfter(
+                                        ScreeningStatus.SCHEDULED,
+                                        now,
+                                        pageable
+                                );
             }
 
         } else {
@@ -425,71 +484,70 @@ public class ScreeningService {
                             )
                             .toOffsetDateTime();
 
-            /*
-             * Jeżeli użytkownik pyta o dzisiejszy dzień,
-             * nie pokazujemy seansów, które już się rozpoczęły.
-             */
             if (now.isAfter(from)) {
                 from = now;
             }
 
-            /*
-             * Jeżeli cały wybrany dzień jest już w przeszłości,
-             * zwracamy pustą stronę.
-             */
             if (!from.isBefore(to)) {
 
                 Page<ScreeningResponse> emptyPage =
-                        Page.empty(pageable);
+                        Page.empty(
+                                pageable
+                        );
 
                 return ScreeningPageResponse.from(
                         emptyPage
                 );
             }
 
-            if (movieId != null && hallId != null) {
+            if (movieId != null
+                    && hallId != null) {
 
-                screenings = screeningRepository
-                        .findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
-                                movieId,
-                                hallId,
-                                ScreeningStatus.SCHEDULED,
-                                from,
-                                to,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByMovie_IdAndHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+                                        movieId,
+                                        hallId,
+                                        ScreeningStatus.SCHEDULED,
+                                        from,
+                                        to,
+                                        pageable
+                                );
 
             } else if (movieId != null) {
 
-                screenings = screeningRepository
-                        .findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
-                                movieId,
-                                ScreeningStatus.SCHEDULED,
-                                from,
-                                to,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByMovie_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+                                        movieId,
+                                        ScreeningStatus.SCHEDULED,
+                                        from,
+                                        to,
+                                        pageable
+                                );
 
             } else if (hallId != null) {
 
-                screenings = screeningRepository
-                        .findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
-                                hallId,
-                                ScreeningStatus.SCHEDULED,
-                                from,
-                                to,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByHall_IdAndStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+                                        hallId,
+                                        ScreeningStatus.SCHEDULED,
+                                        from,
+                                        to,
+                                        pageable
+                                );
 
             } else {
 
-                screenings = screeningRepository
-                        .findByStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
-                                ScreeningStatus.SCHEDULED,
-                                from,
-                                to,
-                                pageable
-                        );
+                screenings =
+                        screeningRepository
+                                .findByStatusAndMovie_VisibleTrueAndStartAtGreaterThanEqualAndStartAtLessThan(
+                                        ScreeningStatus.SCHEDULED,
+                                        from,
+                                        to,
+                                        pageable
+                                );
             }
         }
 
@@ -498,7 +556,9 @@ public class ScreeningService {
                         ScreeningResponse::from
                 );
 
-        return ScreeningPageResponse.from(result);
+        return ScreeningPageResponse.from(
+                result
+        );
     }
 
     @Transactional(readOnly = true)
@@ -506,7 +566,9 @@ public class ScreeningService {
             Long id
     ) {
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
         Screening screening =
                 screeningRepository
@@ -522,7 +584,9 @@ public class ScreeningService {
                                 )
                         );
 
-        return ScreeningResponse.from(screening);
+        return ScreeningResponse.from(
+                screening
+        );
     }
 
     @Transactional(readOnly = true)
@@ -530,7 +594,9 @@ public class ScreeningService {
             Long screeningId
     ) {
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
         screeningRepository
                 .findByIdAndStatusAndMovie_VisibleTrueAndStartAtAfter(
@@ -573,10 +639,9 @@ public class ScreeningService {
                 .toList();
     }
 
-    // HELPERS
-
-    private Screening getScreening(Long id) {
-
+    private Screening getScreening(
+            Long id
+    ) {
         return screeningRepository
                 .findById(id)
                 .orElseThrow(() ->
@@ -592,7 +657,9 @@ public class ScreeningService {
             OffsetDateTime endAt
     ) {
         OffsetDateTime now =
-                OffsetDateTime.now(ZoneOffset.UTC);
+                OffsetDateTime.now(
+                        ZoneOffset.UTC
+                );
 
         if (!startAt.isAfter(now)) {
             throw new ResponseStatusException(
@@ -623,11 +690,29 @@ public class ScreeningService {
                         movie.getRuntime()
                 );
 
-        if (endAt.isBefore(minimumEnd)) {
+        if (endAt.isBefore(
+                minimumEnd
+        )) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Screening duration cannot be shorter than movie runtime"
             );
         }
+    }
+
+    private void publishReservationNotification(
+            Reservation reservation,
+            NotificationType type,
+            String message
+    ) {
+        eventPublisher.publishEvent(
+                new ReservationNotificationEvent(
+                        reservation
+                                .getUser()
+                                .getId(),
+                        type,
+                        message
+                )
+        );
     }
 }
