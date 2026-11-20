@@ -1,13 +1,19 @@
 import {
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react'
 import {
     Link,
+    useLocation,
+    useNavigate,
     useParams,
+    useSearchParams,
 } from 'react-router-dom'
 import { isApiError } from '../api/apiError'
+import { useAuth } from '../auth/useAuth'
+import { createReservation } from '../reservations/reservationApi'
 import {
     getScreening,
     getScreeningSeats,
@@ -44,11 +50,51 @@ function parseScreeningId(
     return parsed
 }
 
+function parseSeatId(
+    value: string | null,
+) {
+    if (!value) {
+        return null
+    }
+
+    const parsed = Number.parseInt(
+        value,
+        10,
+    )
+
+    if (
+        Number.isNaN(parsed) ||
+        parsed <= 0
+    ) {
+        return null
+    }
+
+    return parsed
+}
+
 export function ScreeningDetailsPage() {
     const { id } = useParams()
 
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    const [searchParams] =
+        useSearchParams()
+
+    const {
+        isAuthenticated,
+    } = useAuth()
+
     const screeningId =
         parseScreeningId(id)
+
+    const requestedSeatId =
+        parseSeatId(
+            searchParams.get('seat'),
+        )
+
+    const requestedSeatApplied =
+        useRef(false)
 
     const [
         screening,
@@ -84,6 +130,17 @@ export function ScreeningDetailsPage() {
         useState<string | null>(null)
 
     const [
+        reservationError,
+        setReservationError,
+    ] =
+        useState<string | null>(null)
+
+    const [
+        creatingHold,
+        setCreatingHold,
+    ] = useState(false)
+
+    const [
         notFound,
         setNotFound,
     ] = useState(false)
@@ -92,6 +149,14 @@ export function ScreeningDetailsPage() {
         reloadKey,
         setReloadKey,
     ] = useState(0)
+
+    useEffect(() => {
+        requestedSeatApplied.current =
+            false
+    }, [
+        screeningId,
+        requestedSeatId,
+    ])
 
     useEffect(() => {
         if (screeningId === null) {
@@ -134,15 +199,40 @@ export function ScreeningDetailsPage() {
                     seatsResponse,
                 )
 
+                if (
+                    !requestedSeatApplied.current &&
+                    requestedSeatId !== null
+                ) {
+                    requestedSeatApplied.current =
+                        true
+
+                    const requestedSeat =
+                        seatsResponse.find(
+                            (seat) =>
+                                seat.id ===
+                                requestedSeatId,
+                        )
+
+                    if (
+                        requestedSeat?.available
+                    ) {
+                        setSelectedSeatId(
+                            requestedSeat.id,
+                        )
+                    } else {
+                        setSelectedSeatId(null)
+                    }
+
+                    return
+                }
+
                 setSelectedSeatId(
                     (current) => {
-                        if (
-                            current === null
-                        ) {
+                        if (current === null) {
                             return null
                         }
 
-                        const selected =
+                        const selectedSeat =
                             seatsResponse.find(
                                 (seat) =>
                                     seat.id ===
@@ -150,8 +240,8 @@ export function ScreeningDetailsPage() {
                             )
 
                         if (
-                            !selected ||
-                            !selected.available
+                            !selectedSeat ||
+                            !selectedSeat.available
                         ) {
                             return null
                         }
@@ -199,6 +289,7 @@ export function ScreeningDetailsPage() {
     }, [
         screeningId,
         reloadKey,
+        requestedSeatId,
     ])
 
     const rows = useMemo(() => {
@@ -277,12 +368,78 @@ export function ScreeningDetailsPage() {
             return
         }
 
+        setReservationError(null)
+
         setSelectedSeatId(
             (current) =>
                 current === seat.id
                     ? null
                     : seat.id,
         )
+    }
+
+    async function handleHoldSeat() {
+        if (!selectedSeat) {
+            return
+        }
+
+        if (!isAuthenticated) {
+            navigate(
+                '/login',
+                {
+                    state: {
+                        from:
+                            `${location.pathname}?seat=${selectedSeat.id}`,
+                    },
+                },
+            )
+
+            return
+        }
+
+        setCreatingHold(true)
+        setReservationError(null)
+
+        try {
+            const reservation =
+                await createReservation(
+                    selectedSeat.id,
+                )
+
+            navigate(
+                `/reservations/${reservation.id}`,
+            )
+        } catch (error) {
+            if (
+                isApiError(error) &&
+                error.status === 409
+            ) {
+                setReservationError(
+                    error.message,
+                )
+
+                setSelectedSeatId(null)
+
+                setReloadKey(
+                    (current) =>
+                        current + 1,
+                )
+
+                return
+            }
+
+            if (isApiError(error)) {
+                setReservationError(
+                    error.message,
+                )
+            } else {
+                setReservationError(
+                    'Unable to hold this seat.',
+                )
+            }
+        } finally {
+            setCreatingHold(false)
+        }
     }
 
     if (loading) {
@@ -404,14 +561,12 @@ export function ScreeningDetailsPage() {
                     </div>
                 </div>
 
-                {screening.movieId && (
-                    <Link
-                        to={`/movies/${screening.movieId}`}
-                        className="button button--secondary"
-                    >
-                        Film details
-                    </Link>
-                )}
+                <Link
+                    to={`/movies/${screening.movieId}`}
+                    className="button button--secondary"
+                >
+                    Film details
+                </Link>
             </div>
 
             <div className="seat-section">
@@ -434,12 +589,16 @@ export function ScreeningDetailsPage() {
                     <button
                         type="button"
                         className="button button--secondary"
-                        onClick={() =>
+                        onClick={() => {
+                            setReservationError(
+                                null,
+                            )
+
                             setReloadKey(
                                 (current) =>
                                     current + 1,
                             )
-                        }
+                        }}
                     >
                         Refresh availability
                     </button>
@@ -518,7 +677,8 @@ export function ScreeningDetailsPage() {
                                                                 className
                                                             }
                                                             disabled={
-                                                                !seat.available
+                                                                !seat.available ||
+                                                                creatingHold
                                                             }
                                                             onClick={() =>
                                                                 selectSeat(
@@ -555,6 +715,12 @@ export function ScreeningDetailsPage() {
                     </div>
                 )}
 
+                {reservationError && (
+                    <div className="reservation-inline-error">
+                        {reservationError}
+                    </div>
+                )}
+
                 <div className="seat-selection-summary">
                     <div>
             <span>
@@ -584,6 +750,24 @@ export function ScreeningDetailsPage() {
                             ? `Seat ${selectedSeat.rowLabel}${selectedSeat.number} is selected.`
                             : 'Choose one available seat to continue.'}
                     </p>
+
+                    <button
+                        type="button"
+                        className="button button--primary seat-selection-summary__action"
+                        disabled={
+                            !selectedSeat ||
+                            creatingHold
+                        }
+                        onClick={
+                            handleHoldSeat
+                        }
+                    >
+                        {creatingHold
+                            ? 'Holding seat...'
+                            : !isAuthenticated
+                                ? 'Log in to reserve'
+                                : 'Hold selected seat'}
+                    </button>
                 </div>
             </div>
         </section>

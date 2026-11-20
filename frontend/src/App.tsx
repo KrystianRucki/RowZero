@@ -13,6 +13,7 @@ import { MovieDetailsPage } from './pages/MovieDetailsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { ReservationDetailsPage } from './pages/ReservationDetailsPage'
 import { ReservationsPage } from './pages/ReservationsPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { ScreeningDetailsPage } from './pages/ScreeningDetailsPage'
@@ -72,6 +73,13 @@ function App() {
                         path="/reservations"
                         element={
                             <ReservationsPage />
+                        }
+                    />
+
+                    <Route
+                        path="/reservations/:id"
+                        element={
+                            <ReservationDetailsPage />
                         }
                     />
 

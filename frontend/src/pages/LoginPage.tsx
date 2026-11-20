@@ -4,14 +4,26 @@ import {
 } from 'react'
 import {
     Link,
+    useLocation,
     useNavigate,
 } from 'react-router-dom'
 import { isApiError } from '../api/apiError'
 import { useAuth } from '../auth/useAuth'
 
+type LoginLocationState = {
+    from?: string
+}
+
 export function LoginPage() {
     const navigate = useNavigate()
+    const location = useLocation()
+
     const { login } = useAuth()
+
+    const state =
+        location.state as
+            | LoginLocationState
+            | null
 
     const [email, setEmail] =
         useState('')
@@ -39,6 +51,17 @@ export function LoginPage() {
                 password,
             })
 
+            if (state?.from) {
+                navigate(
+                    state.from,
+                    {
+                        replace: true,
+                    },
+                )
+
+                return
+            }
+
             if (user.role === 'ADMIN') {
                 navigate('/admin')
                 return
@@ -49,7 +72,9 @@ export function LoginPage() {
             if (isApiError(error)) {
                 setError(error.message)
             } else {
-                setError('Unable to log in')
+                setError(
+                    'Unable to log in',
+                )
             }
         } finally {
             setLoading(false)
@@ -71,7 +96,9 @@ export function LoginPage() {
                         type="email"
                         value={email}
                         onChange={(event) =>
-                            setEmail(event.target.value)
+                            setEmail(
+                                event.target.value,
+                            )
                         }
                         required
                     />
@@ -87,7 +114,9 @@ export function LoginPage() {
                         type="password"
                         value={password}
                         onChange={(event) =>
-                            setPassword(event.target.value)
+                            setPassword(
+                                event.target.value,
+                            )
                         }
                         required
                     />

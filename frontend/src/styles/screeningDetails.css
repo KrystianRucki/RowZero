@@ -317,3 +317,45 @@ p:not(.eyebrow) {
         padding-left: 18px;
     }
 }
+.reservation-inline-error {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid
+    rgba(239, 100, 100, 0.34);
+    border-radius: 10px;
+    background:
+            rgba(239, 100, 100, 0.08);
+    color: #f2a0a0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.seat-selection-summary {
+    grid-template-columns:
+    auto auto 1fr auto;
+}
+
+.seat-selection-summary__action {
+    min-width: 180px;
+}
+
+.seat-selection-summary__action:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+@media (max-width: 900px) {
+    .seat-selection-summary {
+        grid-template-columns:
+      1fr 1fr;
+    }
+
+    .seat-selection-summary p {
+        grid-column: 1 / -1;
+    }
+
+    .seat-selection-summary__action {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
