@@ -1,7 +1,18 @@
 import {
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react'
+import {
     Route,
     Routes,
 } from 'react-router-dom'
+import {
+    getAccessToken,
+    setAccessToken,
+} from './api/apiClient'
+import { AuthContext } from './auth/AuthContext'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AdminLayout } from './components/AdminLayout'
 import { PublicLayout } from './components/PublicLayout'
@@ -33,6 +44,64 @@ import { SchedulePage } from './pages/SchedulePage'
 import { ScreeningDetailsPage } from './pages/ScreeningDetailsPage'
 
 export default function App() {
+    const auth = useContext(AuthContext)
+
+    if (!auth) {
+        throw new Error(
+            'App must be rendered inside AuthProvider',
+        )
+    }
+
+    const refreshUser =
+        auth.refreshUser
+
+    const restorePromiseRef =
+        useRef<Promise<void> | null>(
+            null,
+        )
+
+    const [
+        restoringSession,
+        setRestoringSession,
+    ] = useState(
+        () => getAccessToken() !== null,
+    )
+
+    useEffect(() => {
+        const token =
+            getAccessToken()
+
+        if (!token) {
+            setRestoringSession(false)
+            return
+        }
+
+        let cancelled = false
+
+        if (!restorePromiseRef.current) {
+            restorePromiseRef.current =
+                refreshUser().catch(() => {
+                    setAccessToken(null)
+                })
+        }
+
+        void restorePromiseRef.current.finally(
+            () => {
+                if (!cancelled) {
+                    setRestoringSession(false)
+                }
+            },
+        )
+
+        return () => {
+            cancelled = true
+        }
+    }, [refreshUser])
+
+    if (restoringSession) {
+        return null
+    }
+
     return (
         <Routes>
             <Route element={<PublicLayout />}>

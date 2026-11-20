@@ -1,9 +1,45 @@
 import type { ApiError } from './apiError'
 
-let accessToken: string | null = null
+const ACCESS_TOKEN_STORAGE_KEY = 'rowzero.accessToken'
+
+function readStoredAccessToken() {
+    if (typeof window === 'undefined') {
+        return null
+    }
+
+    try {
+        return window.sessionStorage.getItem(
+            ACCESS_TOKEN_STORAGE_KEY,
+        )
+    } catch {
+        return null
+    }
+}
+
+let accessToken: string | null =
+    readStoredAccessToken()
 
 export function setAccessToken(token: string | null) {
     accessToken = token
+
+    if (typeof window === 'undefined') {
+        return
+    }
+
+    try {
+        if (token) {
+            window.sessionStorage.setItem(
+                ACCESS_TOKEN_STORAGE_KEY,
+                token,
+            )
+        } else {
+            window.sessionStorage.removeItem(
+                ACCESS_TOKEN_STORAGE_KEY,
+            )
+        }
+    } catch {
+        return
+    }
 }
 
 export function getAccessToken() {
@@ -30,6 +66,10 @@ export async function apiRequest<T>(
     })
 
     if (!response.ok) {
+        if (response.status === 401 && accessToken) {
+            setAccessToken(null)
+        }
+
         const error = (await response.json()) as ApiError
         throw error
     }
