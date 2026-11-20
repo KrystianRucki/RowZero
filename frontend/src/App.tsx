@@ -11,6 +11,9 @@ import { AdminHallDetailsPage } from './pages/AdminHallDetailsPage'
 import { AdminHallsPage } from './pages/AdminHallsPage'
 import { AdminMovieDetailsPage } from './pages/AdminMovieDetailsPage'
 import { AdminMoviesPage } from './pages/AdminMoviesPage'
+import { AdminScreeningCreatePage } from './pages/AdminScreeningCreatePage'
+import { AdminScreeningDetailsPage } from './pages/AdminScreeningDetailsPage'
+import { AdminScreeningsPage } from './pages/AdminScreeningsPage'
 import { AdminTmdbImportPage } from './pages/AdminTmdbImportPage'
 import { AdminUserDetailsPage } from './pages/AdminUserDetailsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
@@ -66,15 +69,11 @@ export default function App() {
 
                 <Route
                     path="/forbidden"
-                    element={
-                        <ForbiddenPage />
-                    }
+                    element={<ForbiddenPage />}
                 />
 
                 <Route
-                    element={
-                        <ProtectedRoute />
-                    }
+                    element={<ProtectedRoute />}
                 >
                     <Route
                         path="/account"
@@ -105,9 +104,7 @@ export default function App() {
 
                 <Route
                     path="*"
-                    element={
-                        <NotFoundPage />
-                    }
+                    element={<NotFoundPage />}
                 />
             </Route>
 
@@ -175,6 +172,27 @@ export default function App() {
                         path="halls/:id"
                         element={
                             <AdminHallDetailsPage />
+                        }
+                    />
+
+                    <Route
+                        path="screenings"
+                        element={
+                            <AdminScreeningsPage />
+                        }
+                    />
+
+                    <Route
+                        path="screenings/new"
+                        element={
+                            <AdminScreeningCreatePage />
+                        }
+                    />
+
+                    <Route
+                        path="screenings/:id"
+                        element={
+                            <AdminScreeningDetailsPage />
                         }
                     />
                 </Route>

@@ -35,9 +35,8 @@ export function AdminDashboardPage() {
                     </h2>
 
                     <p>
-                        Search users, review
-                        accounts and manage
-                        access.
+                        Search users and manage
+                        account access.
                     </p>
 
                     <span className="admin-dashboard-card__action">
@@ -58,8 +57,7 @@ export function AdminDashboardPage() {
                     </h2>
 
                     <p>
-                        Manage films,
-                        visibility and TMDB
+                        Manage films and TMDB
                         synchronization.
                     </p>
 
@@ -81,8 +79,8 @@ export function AdminDashboardPage() {
                     </h2>
 
                     <p>
-                        Create halls and
-                        configure seat layouts.
+                        Configure halls and seat
+                        layouts.
                     </p>
 
                     <span className="admin-dashboard-card__action">
@@ -90,7 +88,10 @@ export function AdminDashboardPage() {
           </span>
                 </Link>
 
-                <div className="admin-dashboard-card admin-dashboard-card--inactive">
+                <Link
+                    to="/admin/screenings"
+                    className="admin-dashboard-card"
+                >
           <span className="admin-dashboard-card__label">
             Programme
           </span>
@@ -100,14 +101,15 @@ export function AdminDashboardPage() {
                     </h2>
 
                     <p>
-                        Screening schedule and
-                        availability.
+                        Create and manage the
+                        festival screening
+                        schedule.
                     </p>
 
-                    <span className="admin-dashboard-card__status">
-            Next stage
+                    <span className="admin-dashboard-card__action">
+            Manage screenings →
           </span>
-                </div>
+                </Link>
             </div>
         </section>
     )

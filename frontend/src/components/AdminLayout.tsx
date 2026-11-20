@@ -79,9 +79,12 @@ export function AdminLayout() {
                         Halls
                     </NavLink>
 
-                    <div className="admin-navigation__link admin-navigation__link--disabled">
+                    <NavLink
+                        to="/admin/screenings"
+                        className={navClass}
+                    >
                         Screenings
-                    </div>
+                    </NavLink>
 
                     <div className="admin-navigation__link admin-navigation__link--disabled">
                         Reservations
