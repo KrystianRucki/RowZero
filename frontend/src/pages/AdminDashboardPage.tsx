@@ -45,7 +45,10 @@ export function AdminDashboardPage() {
           </span>
                 </Link>
 
-                <div className="admin-dashboard-card admin-dashboard-card--inactive">
+                <Link
+                    to="/admin/movies"
+                    className="admin-dashboard-card"
+                >
           <span className="admin-dashboard-card__label">
             Catalogue
           </span>
@@ -55,14 +58,15 @@ export function AdminDashboardPage() {
                     </h2>
 
                     <p>
-                        Local movie catalogue and
-                        TMDB integration.
+                        Manage the local movie
+                        catalogue, visibility and
+                        TMDB synchronization.
                     </p>
 
-                    <span className="admin-dashboard-card__status">
-            Next stage
+                    <span className="admin-dashboard-card__action">
+            Manage movies →
           </span>
-                </div>
+                </Link>
 
                 <div className="admin-dashboard-card admin-dashboard-card--inactive">
           <span className="admin-dashboard-card__label">
@@ -79,7 +83,7 @@ export function AdminDashboardPage() {
                     </p>
 
                     <span className="admin-dashboard-card__status">
-            Coming next
+            Next stage
           </span>
                 </div>
 

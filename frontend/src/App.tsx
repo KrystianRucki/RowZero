@@ -1,9 +1,15 @@
-import { Route, Routes } from 'react-router-dom'
+import {
+    Route,
+    Routes,
+} from 'react-router-dom'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AdminLayout } from './components/AdminLayout'
 import { PublicLayout } from './components/PublicLayout'
 import { AccountPage } from './pages/AccountPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
+import { AdminMovieDetailsPage } from './pages/AdminMovieDetailsPage'
+import { AdminMoviesPage } from './pages/AdminMoviesPage'
+import { AdminTmdbImportPage } from './pages/AdminTmdbImportPage'
 import { AdminUserDetailsPage } from './pages/AdminUserDetailsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
 import { ForbiddenPage } from './pages/ForbiddenPage'
@@ -29,7 +35,9 @@ export default function App() {
 
                 <Route
                     path="/movies/:id"
-                    element={<MovieDetailsPage />}
+                    element={
+                        <MovieDetailsPage />
+                    }
                 />
 
                 <Route
@@ -56,11 +64,15 @@ export default function App() {
 
                 <Route
                     path="/forbidden"
-                    element={<ForbiddenPage />}
+                    element={
+                        <ForbiddenPage />
+                    }
                 />
 
                 <Route
-                    element={<ProtectedRoute />}
+                    element={
+                        <ProtectedRoute />
+                    }
                 >
                     <Route
                         path="/account"
@@ -91,7 +103,9 @@ export default function App() {
 
                 <Route
                     path="*"
-                    element={<NotFoundPage />}
+                    element={
+                        <NotFoundPage />
+                    }
                 />
             </Route>
 
@@ -124,6 +138,27 @@ export default function App() {
                         path="users/:id"
                         element={
                             <AdminUserDetailsPage />
+                        }
+                    />
+
+                    <Route
+                        path="movies"
+                        element={
+                            <AdminMoviesPage />
+                        }
+                    />
+
+                    <Route
+                        path="movies/import"
+                        element={
+                            <AdminTmdbImportPage />
+                        }
+                    />
+
+                    <Route
+                        path="movies/:id"
+                        element={
+                            <AdminMovieDetailsPage />
                         }
                     />
                 </Route>

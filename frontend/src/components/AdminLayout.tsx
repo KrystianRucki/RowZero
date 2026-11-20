@@ -6,6 +6,16 @@ import {
 import { useAuth } from '../auth/useAuth'
 import '../styles/admin.css'
 
+function navClass({
+                      isActive,
+                  }: {
+    isActive: boolean
+}) {
+    return isActive
+        ? 'admin-navigation__link admin-navigation__link--active'
+        : 'admin-navigation__link'
+}
+
 export function AdminLayout() {
     const navigate = useNavigate()
 
@@ -36,33 +46,31 @@ export function AdminLayout() {
                     <NavLink
                         to="/admin"
                         end
-                        className={({
-                                        isActive,
-                                    }) =>
-                            isActive
-                                ? 'admin-navigation__link admin-navigation__link--active'
-                                : 'admin-navigation__link'
-                        }
+                        className={navClass}
                     >
                         Dashboard
                     </NavLink>
 
                     <NavLink
                         to="/admin/users"
-                        className={({
-                                        isActive,
-                                    }) =>
-                            isActive
-                                ? 'admin-navigation__link admin-navigation__link--active'
-                                : 'admin-navigation__link'
-                        }
+                        className={navClass}
                     >
                         Users
                     </NavLink>
 
-                    <div className="admin-navigation__link admin-navigation__link--disabled">
+                    <NavLink
+                        to="/admin/movies"
+                        className={navClass}
+                    >
                         Movies
-                    </div>
+                    </NavLink>
+
+                    <NavLink
+                        to="/admin/movies/import"
+                        className={navClass}
+                    >
+                        Import TMDB
+                    </NavLink>
 
                     <div className="admin-navigation__link admin-navigation__link--disabled">
                         Halls
