@@ -60,8 +60,7 @@
     letter-spacing: -0.035em;
 }
 
-.seat-section__heading
-p:not(.eyebrow) {
+.seat-section__heading p:not(.eyebrow) {
     margin: 10px 0 0;
     color: #8d8b96;
 }
@@ -105,6 +104,8 @@ p:not(.eyebrow) {
 
 .seat-map-wrapper {
     overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
     margin-top: 32px;
     padding: 42px 32px 48px;
     border: 1px solid #292932;
@@ -116,14 +117,15 @@ p:not(.eyebrow) {
                     transparent 34rem
             ),
             #101015;
+    scrollbar-width: thin;
 }
 
 .seat-screen {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: min(900px, 100%);
     min-width: 600px;
-    max-width: 900px;
     height: 42px;
     margin: 0 auto 56px;
     border-top: 3px solid #8a73ec;
@@ -136,20 +138,24 @@ p:not(.eyebrow) {
 
 .seat-map {
     display: grid;
-    min-width: max-content;
+    width: max-content;
+    min-width: 100%;
+    margin: 0 auto;
     gap: 12px;
 }
 
 .seat-row {
     display: grid;
+    width: 100%;
     grid-template-columns:
-    28px auto 28px;
+            28px auto 28px;
     align-items: center;
     justify-content: center;
     gap: 15px;
 }
 
 .seat-row__label {
+    width: 28px;
     color: #76747f;
     font-size: 12px;
     font-weight: 700;
@@ -158,12 +164,15 @@ p:not(.eyebrow) {
 
 .seat-row__seats {
     display: flex;
+    width: max-content;
+    align-items: center;
     justify-content: center;
     gap: 8px;
 }
 
 .seat {
     display: flex;
+    flex: 0 0 42px;
     align-items: center;
     justify-content: center;
     width: 42px;
@@ -213,7 +222,7 @@ p:not(.eyebrow) {
 .seat-selection-summary {
     display: grid;
     grid-template-columns:
-    auto auto 1fr;
+            auto auto 1fr auto;
     align-items: center;
     gap: 42px;
     margin-top: 22px;
@@ -246,6 +255,15 @@ p:not(.eyebrow) {
     margin: 0;
     color: #9997a1;
     text-align: right;
+}
+
+.seat-selection-summary__action {
+    min-width: 180px;
+}
+
+.seat-selection-summary__action:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .seat-map-empty {
@@ -290,33 +308,6 @@ p:not(.eyebrow) {
     border-radius: 18px;
 }
 
-@media (max-width: 750px) {
-    .screening-details-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .seat-section__heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .seat-selection-summary {
-        grid-template-columns:
-      1fr 1fr;
-        gap: 22px;
-    }
-
-    .seat-selection-summary p {
-        grid-column: 1 / -1;
-        text-align: left;
-    }
-
-    .seat-map-wrapper {
-        padding-right: 18px;
-        padding-left: 18px;
-    }
-}
 .reservation-inline-error {
     margin-top: 20px;
     padding: 14px 16px;
@@ -330,32 +321,185 @@ p:not(.eyebrow) {
     line-height: 1.5;
 }
 
-.seat-selection-summary {
-    grid-template-columns:
-    auto auto 1fr auto;
-}
-
-.seat-selection-summary__action {
-    min-width: 180px;
-}
-
-.seat-selection-summary__action:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-}
-
 @media (max-width: 900px) {
     .seat-selection-summary {
         grid-template-columns:
-      1fr 1fr;
+                1fr 1fr;
     }
 
     .seat-selection-summary p {
         grid-column: 1 / -1;
+        text-align: left;
     }
 
     .seat-selection-summary__action {
         grid-column: 1 / -1;
         width: 100%;
+    }
+}
+
+@media (max-width: 750px) {
+    .screening-details-page {
+        padding-top: 32px;
+        padding-bottom: 64px;
+    }
+
+    .screening-details-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 32px;
+    }
+
+    .screening-details-header h1 {
+        font-size: clamp(
+                38px,
+                11vw,
+                52px
+        );
+    }
+
+    .seat-section {
+        margin-top: 46px;
+    }
+
+    .seat-section__heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .seat-section__heading h2 {
+        font-size: 32px;
+    }
+
+    .seat-legend {
+        justify-content: flex-start;
+        gap: 18px;
+        margin-top: 28px;
+    }
+
+    .seat-map-wrapper {
+        padding:
+                34px 18px
+                40px;
+    }
+
+    .seat-screen {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: 36px;
+        margin-bottom: 44px;
+    }
+
+    .seat-map {
+        width: max-content;
+        min-width: 100%;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .seat-row {
+        width: 100%;
+        min-width: 100%;
+        grid-template-columns:
+                24px auto 24px;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .seat-row__label {
+        width: 24px;
+    }
+
+    .seat-row__seats {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .seat {
+        flex-basis: 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .seat-selection-summary {
+        grid-template-columns:
+                1fr 1fr;
+        gap: 22px;
+        padding: 20px;
+    }
+
+    .seat-selection-summary p {
+        grid-column: 1 / -1;
+        text-align: left;
+    }
+
+    .seat-selection-summary__action {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .screening-details-page {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .seat-legend {
+        display: grid;
+        grid-template-columns:
+                repeat(3, auto);
+        justify-content: start;
+        gap: 14px 18px;
+    }
+
+    .seat-map-wrapper {
+        padding:
+                30px 12px
+                36px;
+    }
+
+    .seat-screen {
+        width: 100%;
+        min-width: 0;
+        margin-bottom: 38px;
+    }
+
+    .seat-map {
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .seat-row {
+        grid-template-columns:
+                22px auto 22px;
+        gap: 8px;
+    }
+
+    .seat-row__label {
+        width: 22px;
+        font-size: 11px;
+    }
+
+    .seat-row__seats {
+        gap: 7px;
+    }
+
+    .seat {
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .seat-selection-summary {
+        gap: 18px;
+        padding: 18px;
+    }
+
+    .seat-selection-summary strong {
+        font-size: 17px;
     }
 }
