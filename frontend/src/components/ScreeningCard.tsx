@@ -7,19 +7,31 @@ import {
 
 type Props = {
     screening: Screening
+    showMovieTitle?: boolean
 }
 
 export function ScreeningCard({
                                   screening,
+                                  showMovieTitle = false,
                               }: Props) {
-    const hall =
-        screening.hallName ??
-        (screening.hallId
-            ? `Hall ${screening.hallId}`
-            : 'Festival hall')
-
     return (
-        <article className="screening-card">
+        <article
+            className={
+                showMovieTitle
+                    ? 'screening-card screening-card--with-movie'
+                    : 'screening-card'
+            }
+        >
+            {showMovieTitle && (
+                <div className="screening-card__movie">
+                    <span>Film</span>
+
+                    <strong>
+                        {screening.movieTitle}
+                    </strong>
+                </div>
+            )}
+
             <div className="screening-card__date">
         <span>
           {formatDate(
@@ -37,14 +49,17 @@ export function ScreeningCard({
 
             <div className="screening-card__hall">
                 <span>Hall</span>
-                <strong>{hall}</strong>
+
+                <strong>
+                    {screening.hallName}
+                </strong>
             </div>
 
             <Link
                 to={`/screenings/${screening.id}`}
                 className="button button--primary"
             >
-                Choose seats
+                View seats
             </Link>
         </article>
     )

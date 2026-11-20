@@ -1,0 +1,258 @@
+.schedule-page {
+    padding-top: 56px;
+    padding-bottom: 90px;
+}
+
+.schedule-hero {
+    max-width: 760px;
+}
+
+.schedule-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(
+            44px,
+            6vw,
+            72px
+    );
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+.schedule-hero > p:not(.eyebrow) {
+    max-width: 620px;
+    margin: 22px 0 0;
+    color: #a8a6b0;
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+.schedule-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 46px;
+    padding: 24px;
+    border: 1px solid #2a2a33;
+    border-radius: 14px;
+    background: #121217;
+}
+
+.schedule-filter {
+    display: flex;
+    flex: 0 0 220px;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.schedule-filter--movie {
+    flex: 1;
+}
+
+.schedule-filter label {
+    color: #8e8c97;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.schedule-filter input,
+.schedule-filter select {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #33333d;
+    border-radius: 9px;
+    outline: none;
+    background: #19191f;
+    color: #ffffff;
+    transition:
+            border-color 160ms ease,
+            box-shadow 160ms ease;
+}
+
+.schedule-filter input:focus,
+.schedule-filter select:focus {
+    border-color: #7c5cff;
+    box-shadow:
+            0 0 0 3px
+            rgba(124, 92, 255, 0.12);
+}
+
+.schedule-filter select {
+    cursor: pointer;
+}
+
+.schedule-filters__actions {
+    display: flex;
+    gap: 10px;
+}
+
+.schedule-summary {
+    margin: 40px 0 20px;
+}
+
+.schedule-summary h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 24px;
+    letter-spacing: -0.025em;
+}
+
+.schedule-summary p {
+    margin: 6px 0 0;
+    color: #7d7b86;
+    font-size: 14px;
+}
+
+.schedule-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 36px;
+}
+
+.schedule-summary + .schedule-list {
+    margin-top: 0;
+}
+
+.screening-card {
+    display: grid;
+    grid-template-columns:
+    minmax(220px, 1.4fr)
+    minmax(150px, 1fr)
+    auto;
+    align-items: center;
+    gap: 28px;
+    padding: 20px 22px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #121217;
+    transition:
+            border-color 160ms ease,
+            background 160ms ease,
+            transform 160ms ease;
+}
+
+.screening-card--with-movie {
+    grid-template-columns:
+    minmax(190px, 1.4fr)
+    minmax(210px, 1.3fr)
+    minmax(140px, 0.8fr)
+    auto;
+}
+
+.screening-card:hover {
+    border-color: #454250;
+    background: #16161c;
+    transform: translateY(-1px);
+}
+
+.screening-card__movie,
+.screening-card__date,
+.screening-card__hall {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.screening-card__movie span,
+.screening-card__date span,
+.screening-card__hall span {
+    color: #777580;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.screening-card__movie strong {
+    overflow: hidden;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.screening-card__date strong {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.screening-card__hall strong {
+    color: #d5d3da;
+    font-size: 15px;
+    font-weight: 650;
+}
+
+.schedule-skeleton {
+    height: 90px;
+    border-radius: 14px;
+}
+
+@media (max-width: 1000px) {
+    .screening-card--with-movie {
+        grid-template-columns:
+      1fr 1fr auto;
+    }
+
+    .screening-card--with-movie
+    .screening-card__hall {
+        grid-column: 2;
+    }
+
+    .screening-card--with-movie
+    .button {
+        grid-column: 3;
+        grid-row: 1 / 3;
+    }
+
+    .schedule-filters {
+        flex-wrap: wrap;
+    }
+
+    .schedule-filter {
+        flex: 1 1 220px;
+    }
+}
+
+@media (max-width: 700px) {
+    .schedule-page {
+        padding-top: 38px;
+    }
+
+    .schedule-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .schedule-filter,
+    .schedule-filter--movie {
+        flex: none;
+        width: 100%;
+    }
+
+    .schedule-filters__actions {
+        width: 100%;
+    }
+
+    .schedule-filters__actions
+    .button {
+        flex: 1;
+    }
+
+    .screening-card,
+    .screening-card--with-movie {
+        display: flex;
+        align-items: stretch;
+        flex-direction: column;
+        gap: 17px;
+    }
+
+    .screening-card .button {
+        width: 100%;
+    }
+}
