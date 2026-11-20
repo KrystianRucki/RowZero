@@ -1,166 +1,144 @@
 import {
+    Link,
     NavLink,
-    useLocation,
     useNavigate,
 } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
+import '../styles/appHeader.css'
+
+function navClass({
+                      isActive,
+                  }: {
+    isActive: boolean
+}) {
+    return isActive
+        ? 'rz-header-nav__link rz-header-nav__link--active'
+        : 'rz-header-nav__link'
+}
 
 export function AppHeader() {
     const navigate = useNavigate()
-    const location = useLocation()
 
     const {
         user,
-        isAuthenticated,
         logout,
     } = useAuth()
-
-    const moviesActive =
-        location.pathname === '/' ||
-        location.pathname.startsWith(
-            '/movies/',
-        )
-
-    const scheduleActive =
-        location.pathname ===
-        '/schedule' ||
-        location.pathname.startsWith(
-            '/screenings/',
-        )
 
     function handleLogout() {
         logout()
         navigate('/login')
     }
 
+    const avatarLetter =
+        user?.email
+            ?.trim()
+            .charAt(0)
+            .toUpperCase() || 'U'
+
     return (
-        <header className="app-header">
-            <div className="app-header__inner">
-                <NavLink
-                    to="/"
-                    className="brand"
-                >
-                    RowZero
-                </NavLink>
-
-                <nav className="main-nav">
-                    <NavLink
+        <header className="rz-header">
+            <div className="rz-header__inner">
+                <div className="rz-header__top">
+                    <Link
                         to="/"
-                        end
-                        className={
-                            moviesActive
-                                ? 'main-nav__link main-nav__link--active'
-                                : 'main-nav__link'
-                        }
-                        aria-current={
-                            moviesActive
-                                ? 'page'
-                                : undefined
-                        }
+                        className="rz-header__brand"
                     >
-                        Movies
-                    </NavLink>
+                        RowZero
+                    </Link>
 
-                    <NavLink
-                        to="/schedule"
-                        className={
-                            scheduleActive
-                                ? 'main-nav__link main-nav__link--active'
-                                : 'main-nav__link'
-                        }
-                        aria-current={
-                            scheduleActive
-                                ? 'page'
-                                : undefined
-                        }
-                    >
-                        Schedule
-                    </NavLink>
+                    <div className="rz-header__actions">
+                        {user ? (
+                            <>
+                                {user.role === 'ADMIN' && (
+                                    <Link
+                                        to="/admin"
+                                        className="rz-header__admin-desktop"
+                                    >
+                                        Admin panel
+                                    </Link>
+                                )}
 
-                    {isAuthenticated && (
-                        <>
+                                <Link
+                                    to="/account"
+                                    className="rz-header__avatar"
+                                    aria-label="Account"
+                                >
+                                    {avatarLetter}
+                                </Link>
+
+                                <button
+                                    type="button"
+                                    className="rz-header__logout"
+                                    onClick={handleLogout}
+                                >
+                                    Log out
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/login"
+                                    className="rz-header__login"
+                                >
+                                    Log in
+                                </Link>
+
+                                <Link
+                                    to="/register"
+                                    className="rz-header__register"
+                                >
+                                    Register
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <nav className="rz-header-nav">
+                    <div className="rz-header-nav__scroll">
+                        <NavLink
+                            to="/"
+                            end
+                            className={navClass}
+                        >
+                            Movies
+                        </NavLink>
+
+                        <NavLink
+                            to="/schedule"
+                            className={navClass}
+                        >
+                            Schedule
+                        </NavLink>
+
+                        {user && (
                             <NavLink
                                 to="/reservations"
-                                className={({
-                                                isActive,
-                                            }) =>
-                                    isActive
-                                        ? 'main-nav__link main-nav__link--active'
-                                        : 'main-nav__link'
-                                }
+                                className={navClass}
                             >
                                 My reservations
                             </NavLink>
+                        )}
 
+                        {user && (
                             <NavLink
                                 to="/notifications"
-                                className={({
-                                                isActive,
-                                            }) =>
-                                    isActive
-                                        ? 'main-nav__link main-nav__link--active'
-                                        : 'main-nav__link'
-                                }
+                                className={navClass}
                             >
                                 Notifications
                             </NavLink>
-                        </>
-                    )}
+                        )}
+
+                        {user?.role === 'ADMIN' && (
+                            <NavLink
+                                to="/admin"
+                                className="rz-header-nav__link rz-header-nav__admin-mobile"
+                            >
+                                Admin
+                            </NavLink>
+                        )}
+                    </div>
                 </nav>
-
-                <div className="app-header__actions">
-                    {!isAuthenticated && (
-                        <>
-                            <NavLink
-                                to="/login"
-                                className="header-link"
-                            >
-                                Log in
-                            </NavLink>
-
-                            <NavLink
-                                to="/register"
-                                className="button button--primary"
-                            >
-                                Create account
-                            </NavLink>
-                        </>
-                    )}
-
-                    {isAuthenticated && (
-                        <>
-                            {user?.role ===
-                                'ADMIN' && (
-                                    <NavLink
-                                        to="/admin"
-                                        className="header-link"
-                                    >
-                                        Admin
-                                    </NavLink>
-                                )}
-
-                            <NavLink
-                                to="/account"
-                                className="account-button"
-                                aria-label="My account"
-                            >
-                                {user?.email
-                                    .charAt(0)
-                                    .toUpperCase()}
-                            </NavLink>
-
-                            <button
-                                type="button"
-                                className="button button--secondary"
-                                onClick={
-                                    handleLogout
-                                }
-                            >
-                                Log out
-                            </button>
-                        </>
-                    )}
-                </div>
             </div>
         </header>
     )
