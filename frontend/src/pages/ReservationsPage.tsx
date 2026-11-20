@@ -1,5 +1,4 @@
 import {
-    useCallback,
     useEffect,
     useMemo,
     useState,
@@ -80,14 +79,6 @@ export function ReservationsPage() {
             controller.abort()
         }
     }, [reloadKey])
-
-    const handleExpired =
-        useCallback(() => {
-            setReloadKey(
-                (current) =>
-                    current + 1,
-            )
-        }, [])
 
     const {
         activeReservations,
@@ -256,10 +247,10 @@ export function ReservationsPage() {
                                 <h2>Active</h2>
 
                                 <span>
-                  {
-                      activeReservations.length
-                  }
-                </span>
+                                    {
+                                        activeReservations.length
+                                    }
+                                </span>
                             </div>
 
                             {activeReservations.length >
@@ -273,9 +264,6 @@ export function ReservationsPage() {
                                                 }
                                                 reservation={
                                                     reservation
-                                                }
-                                                onExpired={
-                                                    handleExpired
                                                 }
                                             />
                                         ),
@@ -293,10 +281,10 @@ export function ReservationsPage() {
                                 <h2>History</h2>
 
                                 <span>
-                  {
-                      historyReservations.length
-                  }
-                </span>
+                                    {
+                                        historyReservations.length
+                                    }
+                                </span>
                             </div>
 
                             {historyReservations.length >
@@ -310,9 +298,6 @@ export function ReservationsPage() {
                                                 }
                                                 reservation={
                                                     reservation
-                                                }
-                                                onExpired={
-                                                    handleExpired
                                                 }
                                             />
                                         ),
