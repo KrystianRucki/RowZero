@@ -1,11 +1,11 @@
-import {
-    Route,
-    Routes,
-} from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './auth/ProtectedRoute'
-import { PublicLayout } from './layouts/PublicLayout'
+import { AdminLayout } from './components/AdminLayout'
+import { PublicLayout } from './components/PublicLayout'
 import { AccountPage } from './pages/AccountPage'
-import { AdminPage } from './pages/AdminPage'
+import { AdminDashboardPage } from './pages/AdminDashboardPage'
+import { AdminUserDetailsPage } from './pages/AdminUserDetailsPage'
+import { AdminUsersPage } from './pages/AdminUsersPage'
 import { ForbiddenPage } from './pages/ForbiddenPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
@@ -18,7 +18,7 @@ import { ReservationsPage } from './pages/ReservationsPage'
 import { SchedulePage } from './pages/SchedulePage'
 import { ScreeningDetailsPage } from './pages/ScreeningDetailsPage'
 
-function App() {
+export default function App() {
     return (
         <Routes>
             <Route element={<PublicLayout />}>
@@ -29,9 +29,7 @@ function App() {
 
                 <Route
                     path="/movies/:id"
-                    element={
-                        <MovieDetailsPage />
-                    }
+                    element={<MovieDetailsPage />}
                 />
 
                 <Route
@@ -106,11 +104,30 @@ function App() {
             >
                 <Route
                     path="/admin"
-                    element={<AdminPage />}
-                />
+                    element={<AdminLayout />}
+                >
+                    <Route
+                        index
+                        element={
+                            <AdminDashboardPage />
+                        }
+                    />
+
+                    <Route
+                        path="users"
+                        element={
+                            <AdminUsersPage />
+                        }
+                    />
+
+                    <Route
+                        path="users/:id"
+                        element={
+                            <AdminUserDetailsPage />
+                        }
+                    />
+                </Route>
             </Route>
         </Routes>
     )
 }
-
-export default App
