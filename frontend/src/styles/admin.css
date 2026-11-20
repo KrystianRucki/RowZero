@@ -927,3 +927,244 @@ a.admin-dashboard-card:hover {
       100px 1fr;
     }
 }
+.admin-create-panel,
+.admin-form-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 30px;
+    padding: 22px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.admin-create-panel h2,
+.admin-form-card h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 21px;
+}
+
+.admin-form-card p:not(.eyebrow) {
+    margin: 7px 0 0;
+    color: #86838e;
+    font-size: 12px;
+}
+
+.admin-create-panel__form,
+.admin-form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-create-panel input,
+.admin-form-row input,
+.admin-seat-form input,
+.admin-dialog-fields input {
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid #34343e;
+    border-radius: 9px;
+    outline: none;
+    background: #17171c;
+    color: #ffffff;
+}
+
+.admin-create-panel input:focus,
+.admin-form-row input:focus,
+.admin-seat-form input:focus,
+.admin-dialog-fields input:focus {
+    border-color: #7c5cff;
+    box-shadow:
+            0 0 0 3px
+            rgba(124, 92, 255, 0.1);
+}
+
+.admin-hall-name {
+    color: #dedce3;
+}
+
+.admin-seat-layout {
+    margin-top: 30px;
+    padding: 25px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.admin-seat-layout__heading h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 25px;
+}
+
+.admin-seat-layout__empty {
+    margin-top: 25px;
+    padding: 40px;
+    border: 1px dashed #303039;
+    border-radius: 10px;
+    color: #777580;
+    text-align: center;
+}
+
+.admin-seat-map {
+    overflow-x: auto;
+    margin-top: 25px;
+    padding: 10px 0 20px;
+}
+
+.admin-seat-screen {
+    width: min(520px, 80%);
+    margin: 0 auto 35px;
+    padding: 7px;
+    border-top: 2px solid #5d566e;
+    color: #6f6c77;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-align: center;
+}
+
+.admin-seat-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-width: max-content;
+    margin-bottom: 10px;
+}
+
+.admin-seat-row__label {
+    width: 25px;
+    color: #74717c;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.admin-seat-row__seats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.admin-seat {
+    display: flex;
+    width: 37px;
+    height: 37px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-seat--active {
+    border: 1px solid #564b7f;
+    background: #28213d;
+    color: #c1b3ff;
+}
+
+.admin-seat--active:hover {
+    border-color: #8068e5;
+    background: #352a54;
+}
+
+.admin-seat--inactive {
+    border: 1px solid #34343c;
+    background: #1b1b20;
+    color: #62606a;
+}
+
+.admin-seat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.admin-seat-form label,
+.admin-dialog-fields label {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-seat-form label > span,
+.admin-dialog-fields label > span {
+    color: #777580;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-seat-form
+input[type='text'] {
+    width: 90px;
+}
+
+.admin-seat-form
+input[type='number'] {
+    width: 100px;
+}
+
+.admin-checkbox {
+    display: flex !important;
+    height: 44px;
+    align-items: center;
+    grid-template-columns: auto 1fr;
+}
+
+.admin-checkbox input {
+    width: 16px;
+    height: 16px;
+}
+
+.admin-checkbox span {
+    color: #aaa7b1 !important;
+    text-transform: none !important;
+}
+
+.admin-dialog-fields {
+    display: grid;
+    grid-template-columns:
+    1fr 1fr;
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.admin-dialog-fields
+.admin-checkbox {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 800px) {
+    .admin-create-panel,
+    .admin-form-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-create-panel__form,
+    .admin-form-row,
+    .admin-seat-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-seat-form
+    input[type='text'],
+    .admin-seat-form
+    input[type='number'] {
+        width: 100%;
+    }
+
+    .admin-dialog-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-dialog-fields
+    .admin-checkbox {
+        grid-column: auto;
+    }
+}

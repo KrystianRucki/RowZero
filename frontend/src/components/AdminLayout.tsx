@@ -72,9 +72,12 @@ export function AdminLayout() {
                         Import TMDB
                     </NavLink>
 
-                    <div className="admin-navigation__link admin-navigation__link--disabled">
+                    <NavLink
+                        to="/admin/halls"
+                        className={navClass}
+                    >
                         Halls
-                    </div>
+                    </NavLink>
 
                     <div className="admin-navigation__link admin-navigation__link--disabled">
                         Screenings

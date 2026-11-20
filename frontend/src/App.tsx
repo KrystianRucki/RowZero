@@ -7,6 +7,8 @@ import { AdminLayout } from './components/AdminLayout'
 import { PublicLayout } from './components/PublicLayout'
 import { AccountPage } from './pages/AccountPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
+import { AdminHallDetailsPage } from './pages/AdminHallDetailsPage'
+import { AdminHallsPage } from './pages/AdminHallsPage'
 import { AdminMovieDetailsPage } from './pages/AdminMovieDetailsPage'
 import { AdminMoviesPage } from './pages/AdminMoviesPage'
 import { AdminTmdbImportPage } from './pages/AdminTmdbImportPage'
@@ -159,6 +161,20 @@ export default function App() {
                         path="movies/:id"
                         element={
                             <AdminMovieDetailsPage />
+                        }
+                    />
+
+                    <Route
+                        path="halls"
+                        element={
+                            <AdminHallsPage />
+                        }
+                    />
+
+                    <Route
+                        path="halls/:id"
+                        element={
+                            <AdminHallDetailsPage />
                         }
                     />
                 </Route>
