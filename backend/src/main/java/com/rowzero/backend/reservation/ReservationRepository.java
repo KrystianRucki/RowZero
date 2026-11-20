@@ -1,6 +1,8 @@
 package com.rowzero.backend.reservation;
 
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -139,5 +141,79 @@ public interface ReservationRepository
 
             @Param("now")
             OffsetDateTime now
+    );
+
+    @Query(
+            value = """
+                    SELECT r
+                    FROM Reservation r
+                    JOIN FETCH r.user u
+                    JOIN FETCH r.screening s
+                    JOIN FETCH s.movie m
+                    JOIN FETCH s.hall h
+                    JOIN FETCH r.screeningSeat ss
+                    JOIN FETCH ss.seat seat
+                    WHERE (:status IS NULL OR r.status = :status)
+                      AND (:screeningId IS NULL OR s.id = :screeningId)
+                      AND LOWER(u.email)
+                          LIKE LOWER(CONCAT('%', :email, '%'))
+                      AND (
+                            :dateFilter = false
+                            OR (
+                                s.startAt >= :from
+                                AND s.startAt < :to
+                            )
+                      )
+                    """,
+            countQuery = """
+                    SELECT COUNT(r)
+                    FROM Reservation r
+                    WHERE (:status IS NULL OR r.status = :status)
+                      AND (
+                            :screeningId IS NULL
+                            OR r.screening.id = :screeningId
+                      )
+                      AND LOWER(r.user.email)
+                          LIKE LOWER(CONCAT('%', :email, '%'))
+                      AND (
+                            :dateFilter = false
+                            OR (
+                                r.screening.startAt >= :from
+                                AND r.screening.startAt < :to
+                            )
+                      )
+                    """
+    )
+    Page<Reservation> findAdminReservations(
+            @Param("status")
+            ReservationStatus status,
+
+            @Param("screeningId")
+            Long screeningId,
+
+            @Param("email")
+            String email,
+
+            @Param("dateFilter")
+            boolean dateFilter,
+
+            @Param("from")
+            OffsetDateTime from,
+
+            @Param("to")
+            OffsetDateTime to,
+
+            Pageable pageable
+    );
+
+    long countByScreening_IdAndStatus(
+            Long screeningId,
+            ReservationStatus status
+    );
+
+    long countByScreening_IdAndStatusAndExpiresAtAfter(
+            Long screeningId,
+            ReservationStatus status,
+            OffsetDateTime expiresAt
     );
 }

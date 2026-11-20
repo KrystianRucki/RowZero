@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 public interface ScreeningRepository
         extends JpaRepository<Screening, Long> {
@@ -113,5 +115,15 @@ public interface ScreeningRepository
             @Param("endAt") OffsetDateTime endAt,
             @Param("status") ScreeningStatus status,
             @Param("excludedScreeningId") Long excludedScreeningId
+    );
+
+    List<Screening> findByStatusOrderByStartAtAsc(
+            ScreeningStatus status
+    );
+
+    List<Screening> findByStatusAndStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtAsc(
+            ScreeningStatus status,
+            OffsetDateTime from,
+            OffsetDateTime to
     );
 }

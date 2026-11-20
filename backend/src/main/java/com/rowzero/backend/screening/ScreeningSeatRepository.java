@@ -17,7 +17,9 @@ public interface ScreeningSeatRepository
     );
 
     boolean existsBySeat_Id(Long seatId);
-
+    long countByScreening_Id(
+            Long screeningId
+    );
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             SELECT ss
