@@ -9,6 +9,7 @@ export type Reservation = {
     screeningId: number
     movieId: number
     movieTitle: string
+    posterPath: string | null
     hallId: number
     hallName: string
     screeningSeatId: number

@@ -38,13 +38,59 @@ export function AppHeader() {
     return (
         <header className="rz-header">
             <div className="rz-header__inner">
-                <div className="rz-header__top">
+                <div className="rz-header__row">
                     <Link
                         to="/"
                         className="rz-header__brand"
                     >
                         RowZero
                     </Link>
+
+                    <nav className="rz-header-nav">
+                        <div className="rz-header-nav__scroll">
+                            <NavLink
+                                to="/"
+                                end
+                                className={navClass}
+                            >
+                                Movies
+                            </NavLink>
+
+                            <NavLink
+                                to="/schedule"
+                                className={navClass}
+                            >
+                                Schedule
+                            </NavLink>
+
+                            {user && (
+                                <NavLink
+                                    to="/reservations"
+                                    className={navClass}
+                                >
+                                    My reservations
+                                </NavLink>
+                            )}
+
+                            {user && (
+                                <NavLink
+                                    to="/notifications"
+                                    className={navClass}
+                                >
+                                    Notifications
+                                </NavLink>
+                            )}
+
+                            {user?.role === 'ADMIN' && (
+                                <NavLink
+                                    to="/admin"
+                                    className="rz-header-nav__link rz-header-nav__admin-mobile"
+                                >
+                                    Admin
+                                </NavLink>
+                            )}
+                        </div>
+                    </nav>
 
                     <div className="rz-header__actions">
                         {user ? (
@@ -93,52 +139,6 @@ export function AppHeader() {
                         )}
                     </div>
                 </div>
-
-                <nav className="rz-header-nav">
-                    <div className="rz-header-nav__scroll">
-                        <NavLink
-                            to="/"
-                            end
-                            className={navClass}
-                        >
-                            Movies
-                        </NavLink>
-
-                        <NavLink
-                            to="/schedule"
-                            className={navClass}
-                        >
-                            Schedule
-                        </NavLink>
-
-                        {user && (
-                            <NavLink
-                                to="/reservations"
-                                className={navClass}
-                            >
-                                My reservations
-                            </NavLink>
-                        )}
-
-                        {user && (
-                            <NavLink
-                                to="/notifications"
-                                className={navClass}
-                            >
-                                Notifications
-                            </NavLink>
-                        )}
-
-                        {user?.role === 'ADMIN' && (
-                            <NavLink
-                                to="/admin"
-                                className="rz-header-nav__link rz-header-nav__admin-mobile"
-                            >
-                                Admin
-                            </NavLink>
-                        )}
-                    </div>
-                </nav>
             </div>
         </header>
     )

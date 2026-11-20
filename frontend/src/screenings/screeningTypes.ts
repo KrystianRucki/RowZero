@@ -2,6 +2,7 @@ export type Screening = {
     id: number
     movieId: number
     movieTitle: string
+    posterPath: string | null
     hallId: number
     hallName: string
     startAt: string
