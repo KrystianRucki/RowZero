@@ -16,7 +16,8 @@ export function AdminDashboardPage() {
 
                     <p>
                         Manage RowZero festival
-                        data and user accounts.
+                        data, programme and user
+                        activity.
                     </p>
                 </div>
             </div>
@@ -108,6 +109,50 @@ export function AdminDashboardPage() {
 
                     <span className="admin-dashboard-card__action">
             Manage screenings →
+          </span>
+                </Link>
+
+                <Link
+                    to="/admin/reservations"
+                    className="admin-dashboard-card"
+                >
+          <span className="admin-dashboard-card__label">
+            Bookings
+          </span>
+
+                    <h2>
+                        Reservations
+                    </h2>
+
+                    <p>
+                        Browse, filter and manage
+                        festival reservations.
+                    </p>
+
+                    <span className="admin-dashboard-card__action">
+            Manage reservations →
+          </span>
+                </Link>
+
+                <Link
+                    to="/admin/statistics"
+                    className="admin-dashboard-card"
+                >
+          <span className="admin-dashboard-card__label">
+            Insights
+          </span>
+
+                    <h2>
+                        Occupancy
+                    </h2>
+
+                    <p>
+                        Monitor hall occupancy,
+                        holds and confirmed seats.
+                    </p>
+
+                    <span className="admin-dashboard-card__action">
+            View statistics →
           </span>
                 </Link>
             </div>

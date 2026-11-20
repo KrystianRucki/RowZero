@@ -86,9 +86,19 @@ export function AdminLayout() {
                         Screenings
                     </NavLink>
 
-                    <div className="admin-navigation__link admin-navigation__link--disabled">
+                    <NavLink
+                        to="/admin/reservations"
+                        className={navClass}
+                    >
                         Reservations
-                    </div>
+                    </NavLink>
+
+                    <NavLink
+                        to="/admin/statistics"
+                        className={navClass}
+                    >
+                        Statistics
+                    </NavLink>
                 </nav>
 
                 <div className="admin-sidebar__bottom">

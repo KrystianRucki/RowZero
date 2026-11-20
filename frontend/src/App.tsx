@@ -11,9 +11,12 @@ import { AdminHallDetailsPage } from './pages/AdminHallDetailsPage'
 import { AdminHallsPage } from './pages/AdminHallsPage'
 import { AdminMovieDetailsPage } from './pages/AdminMovieDetailsPage'
 import { AdminMoviesPage } from './pages/AdminMoviesPage'
+import { AdminReservationDetailsPage } from './pages/AdminReservationDetailsPage'
+import { AdminReservationsPage } from './pages/AdminReservationsPage'
 import { AdminScreeningCreatePage } from './pages/AdminScreeningCreatePage'
 import { AdminScreeningDetailsPage } from './pages/AdminScreeningDetailsPage'
 import { AdminScreeningsPage } from './pages/AdminScreeningsPage'
+import { AdminStatisticsPage } from './pages/AdminStatisticsPage'
 import { AdminTmdbImportPage } from './pages/AdminTmdbImportPage'
 import { AdminUserDetailsPage } from './pages/AdminUserDetailsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
@@ -40,9 +43,7 @@ export default function App() {
 
                 <Route
                     path="/movies/:id"
-                    element={
-                        <MovieDetailsPage />
-                    }
+                    element={<MovieDetailsPage />}
                 />
 
                 <Route
@@ -52,9 +53,7 @@ export default function App() {
 
                 <Route
                     path="/screenings/:id"
-                    element={
-                        <ScreeningDetailsPage />
-                    }
+                    element={<ScreeningDetailsPage />}
                 />
 
                 <Route
@@ -82,23 +81,17 @@ export default function App() {
 
                     <Route
                         path="/reservations"
-                        element={
-                            <ReservationsPage />
-                        }
+                        element={<ReservationsPage />}
                     />
 
                     <Route
                         path="/reservations/:id"
-                        element={
-                            <ReservationDetailsPage />
-                        }
+                        element={<ReservationDetailsPage />}
                     />
 
                     <Route
                         path="/notifications"
-                        element={
-                            <NotificationsPage />
-                        }
+                        element={<NotificationsPage />}
                     />
                 </Route>
 
@@ -121,79 +114,72 @@ export default function App() {
                 >
                     <Route
                         index
-                        element={
-                            <AdminDashboardPage />
-                        }
+                        element={<AdminDashboardPage />}
                     />
 
                     <Route
                         path="users"
-                        element={
-                            <AdminUsersPage />
-                        }
+                        element={<AdminUsersPage />}
                     />
 
                     <Route
                         path="users/:id"
-                        element={
-                            <AdminUserDetailsPage />
-                        }
+                        element={<AdminUserDetailsPage />}
                     />
 
                     <Route
                         path="movies"
-                        element={
-                            <AdminMoviesPage />
-                        }
+                        element={<AdminMoviesPage />}
                     />
 
                     <Route
                         path="movies/import"
-                        element={
-                            <AdminTmdbImportPage />
-                        }
+                        element={<AdminTmdbImportPage />}
                     />
 
                     <Route
                         path="movies/:id"
-                        element={
-                            <AdminMovieDetailsPage />
-                        }
+                        element={<AdminMovieDetailsPage />}
                     />
 
                     <Route
                         path="halls"
-                        element={
-                            <AdminHallsPage />
-                        }
+                        element={<AdminHallsPage />}
                     />
 
                     <Route
                         path="halls/:id"
-                        element={
-                            <AdminHallDetailsPage />
-                        }
+                        element={<AdminHallDetailsPage />}
                     />
 
                     <Route
                         path="screenings"
-                        element={
-                            <AdminScreeningsPage />
-                        }
+                        element={<AdminScreeningsPage />}
                     />
 
                     <Route
                         path="screenings/new"
-                        element={
-                            <AdminScreeningCreatePage />
-                        }
+                        element={<AdminScreeningCreatePage />}
                     />
 
                     <Route
                         path="screenings/:id"
-                        element={
-                            <AdminScreeningDetailsPage />
-                        }
+                        element={<AdminScreeningDetailsPage />}
+                    />
+
+                    <Route
+                        path="reservations"
+                        element={<AdminReservationsPage />}
+                    />
+
+                    <Route
+                        path="reservations/:id"
+                        element={<AdminReservationDetailsPage />}
+                    />
+
+                    <Route
+                        path="statistics"
+                        element={<AdminStatisticsPage />}
                     />
                 </Route>
             </Route>

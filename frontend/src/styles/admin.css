@@ -1339,3 +1339,329 @@ input[type='number'] {
         grid-template-columns: 1fr;
     }
 }
+.admin-reservation-filters {
+    display: grid;
+    grid-template-columns:
+    minmax(200px, 2fr)
+    minmax(150px, 1fr)
+    minmax(150px, 1fr)
+    minmax(130px, 1fr);
+    gap: 14px;
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.admin-reservation-filters label,
+.admin-statistics-filter label {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-reservation-filters label > span,
+.admin-statistics-filter label > span {
+    color: #777580;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.admin-reservation-filters input,
+.admin-reservation-filters select,
+.admin-statistics-filter input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #34343e;
+    border-radius: 9px;
+    outline: none;
+    background: #17171c;
+    color: #ffffff;
+}
+
+.admin-reservation-filters input:focus,
+.admin-reservation-filters select:focus,
+.admin-statistics-filter input:focus {
+    border-color: #7c5cff;
+    box-shadow:
+            0 0 0 3px
+            rgba(124, 92, 255, 0.1);
+}
+
+.admin-reservation-filters__actions {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.admin-reservation-seat {
+    color: #c5b7ff;
+    font-size: 15px;
+}
+
+.admin-reservation-status {
+    display: inline-flex;
+    padding: 5px 8px;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.admin-reservation-status--confirmed {
+    border-color:
+            rgba(87, 195, 137, 0.3);
+    background:
+            rgba(87, 195, 137, 0.06);
+    color: #80d3a7;
+}
+
+.admin-reservation-status--held {
+    border-color:
+            rgba(187, 157, 255, 0.3);
+    background:
+            rgba(124, 92, 255, 0.08);
+    color: #bba8ff;
+}
+
+.admin-reservation-status--cancelled {
+    border-color:
+            rgba(239, 100, 100, 0.3);
+    background:
+            rgba(239, 100, 100, 0.06);
+    color: #e99292;
+}
+
+.admin-reservation-status--expired {
+    border-color: #3a3942;
+    background: #1b1b21;
+    color: #85828d;
+}
+
+.admin-reservation-details-grid {
+    display: grid;
+    grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.admin-reservation-details-grid
+.admin-details-card {
+    margin-top: 0;
+}
+
+.admin-reservation-timeline {
+    display: grid;
+    grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #2c2c35;
+}
+
+.admin-reservation-timeline > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 17px;
+    background: #131318;
+}
+
+.admin-reservation-timeline span {
+    color: #777580;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-reservation-timeline strong {
+    color: #d3d0d8;
+    font-size: 11px;
+}
+
+.admin-reservation-links {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.admin-statistics-filter {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.admin-statistics-summary {
+    display: grid;
+    grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #2c2c35;
+}
+
+.admin-statistics-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 18px;
+    background: #131318;
+}
+
+.admin-statistics-summary span {
+    color: #777580;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-statistics-summary strong {
+    color: #ffffff;
+    font-size: 23px;
+}
+
+.admin-occupancy-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 25px;
+}
+
+.admin-occupancy-card {
+    padding: 21px;
+    border: 1px solid #2c2c35;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.admin-occupancy-card__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.admin-occupancy-card__heading span {
+    color: #777580;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-occupancy-card__heading h2 {
+    margin: 5px 0 0;
+    color: #ffffff;
+    font-size: 21px;
+}
+
+.admin-occupancy-card__heading p {
+    margin: 6px 0 0;
+    color: #888590;
+    font-size: 12px;
+}
+
+.admin-occupancy-percent {
+    color: #b9a6ff;
+    font-size: 27px;
+}
+
+.admin-occupancy-bar {
+    height: 9px;
+    overflow: hidden;
+    margin-top: 18px;
+    border-radius: 999px;
+    background: #24242b;
+}
+
+.admin-occupancy-bar__fill {
+    height: 100%;
+    border-radius: inherit;
+    background:
+            linear-gradient(
+                    90deg,
+                    #6c50db,
+                    #a18bff
+            );
+}
+
+.admin-occupancy-data {
+    display: grid;
+    grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.admin-occupancy-data > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-occupancy-data span {
+    color: #6f6d77;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-occupancy-data strong {
+    color: #dedce3;
+    font-size: 16px;
+}
+
+@media (max-width: 1000px) {
+    .admin-reservation-filters {
+        grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-statistics-summary {
+        grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-reservation-timeline {
+        grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-reservation-filters,
+    .admin-reservation-details-grid,
+    .admin-statistics-summary,
+    .admin-reservation-timeline,
+    .admin-occupancy-data {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-statistics-filter,
+    .admin-reservation-links {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-reservation-filters__actions {
+        flex-direction: column;
+    }
+
+    .admin-occupancy-card__heading {
+        flex-direction: column;
+    }
+}
