@@ -27,6 +27,17 @@ export function getReservation(
     )
 }
 
+export function getMyReservations(
+    signal?: AbortSignal,
+) {
+    return apiRequest<Reservation[]>(
+        '/api/reservations/my',
+        {
+            signal,
+        },
+    )
+}
+
 export function confirmReservation(
     id: number,
 ) {

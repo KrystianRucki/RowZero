@@ -30,6 +30,18 @@ const timeFormatter =
         FESTIVAL_TIME_ZONE,
     })
 
+const dateTimeFormatter =
+    new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone:
+        FESTIVAL_TIME_ZONE,
+    })
+
 export function formatDate(
     value: string,
 ) {
@@ -50,6 +62,14 @@ export function formatTime(
     value: string,
 ) {
     return timeFormatter.format(
+        new Date(value),
+    )
+}
+
+export function formatDateTime(
+    value: string,
+) {
+    return dateTimeFormatter.format(
         new Date(value),
     )
 }

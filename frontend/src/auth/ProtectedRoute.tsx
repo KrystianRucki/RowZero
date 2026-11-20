@@ -1,6 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from './useAuth.ts'
-import type { UserRole } from './authTypes.ts'
+import {
+    Navigate,
+    Outlet,
+    useLocation,
+} from 'react-router-dom'
+import { useAuth } from './useAuth'
+import type { UserRole } from './authTypes'
 
 type Props = {
     requiredRole?: UserRole
@@ -9,6 +13,9 @@ type Props = {
 export function ProtectedRoute({
                                    requiredRole,
                                }: Props) {
+    const location =
+        useLocation()
+
     const {
         user,
         isAuthenticated,
@@ -19,6 +26,11 @@ export function ProtectedRoute({
             <Navigate
                 to="/login"
                 replace
+                state={{
+                    from:
+                        location.pathname +
+                        location.search,
+                }}
             />
         )
     }

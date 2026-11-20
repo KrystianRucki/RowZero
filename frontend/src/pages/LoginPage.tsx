@@ -9,8 +9,9 @@ import {
 } from 'react-router-dom'
 import { isApiError } from '../api/apiError'
 import { useAuth } from '../auth/useAuth'
+import '../styles/auth.css'
 
-type LoginLocationState = {
+type AuthLocationState = {
     from?: string
 }
 
@@ -22,7 +23,7 @@ export function LoginPage() {
 
     const state =
         location.state as
-            | LoginLocationState
+            | AuthLocationState
             | null
 
     const [email, setEmail] =
@@ -46,10 +47,11 @@ export function LoginPage() {
         setError(null)
 
         try {
-            const user = await login({
-                email,
-                password,
-            })
+            const user =
+                await login({
+                    email,
+                    password,
+                })
 
             if (state?.from) {
                 navigate(
@@ -62,7 +64,9 @@ export function LoginPage() {
                 return
             }
 
-            if (user.role === 'ADMIN') {
+            if (
+                user.role === 'ADMIN'
+            ) {
                 navigate('/admin')
                 return
             }
@@ -73,7 +77,7 @@ export function LoginPage() {
                 setError(error.message)
             } else {
                 setError(
-                    'Unable to log in',
+                    'Unable to log in.',
                 )
             }
         } finally {
@@ -82,66 +86,91 @@ export function LoginPage() {
     }
 
     return (
-        <main>
-            <h1>Login</h1>
+        <section className="auth-page">
+            <div className="auth-card">
+                <div className="auth-card__heading">
+                    <p className="eyebrow">
+                        Welcome back
+                    </p>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">
-                        Email
-                    </label>
+                    <h1>Log in</h1>
 
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) =>
-                            setEmail(
-                                event.target.value,
-                            )
-                        }
-                        required
-                    />
+                    <p>
+                        Access your reservations
+                        and festival account.
+                    </p>
                 </div>
 
-                <div>
-                    <label htmlFor="password">
-                        Password
-                    </label>
-
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) =>
-                            setPassword(
-                                event.target.value,
-                            )
-                        }
-                        required
-                    />
-                </div>
-
-                {error && (
-                    <p>{error}</p>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={loading}
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
                 >
-                    {loading
-                        ? 'Logging in...'
-                        : 'Login'}
-                </button>
-            </form>
+                    <div className="auth-field">
+                        <label htmlFor="email">
+                            Email
+                        </label>
 
-            <p>
-                No account?{' '}
-                <Link to="/register">
-                    Register
-                </Link>
-            </p>
-        </main>
+                        <input
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(
+                                    event.target.value,
+                                )
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="auth-field">
+                        <label htmlFor="password">
+                            Password
+                        </label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(
+                                    event.target.value,
+                                )
+                            }
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="auth-error">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="button button--primary auth-submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? 'Logging in...'
+                            : 'Log in'}
+                    </button>
+                </form>
+
+                <p className="auth-switch">
+                    Don't have an account?{' '}
+
+                    <Link
+                        to="/register"
+                        state={state}
+                    >
+                        Create account
+                    </Link>
+                </p>
+            </div>
+        </section>
     )
 }

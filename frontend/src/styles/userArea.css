@@ -1,0 +1,389 @@
+.user-area-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 56px;
+    padding-bottom: 90px;
+}
+
+.user-area-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 34px;
+    border-bottom: 1px solid #292931;
+}
+
+.user-area-heading h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(
+            42px,
+            6vw,
+            64px
+    );
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+.user-area-heading
+p:not(.eyebrow) {
+    max-width: 640px;
+    margin: 16px 0 0;
+    color: #96939f;
+    line-height: 1.6;
+}
+
+.user-area-section {
+    margin-top: 44px;
+}
+
+.user-area-section__heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.user-area-section__heading h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.user-area-section__heading span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+    height: 25px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #202027;
+    color: #92909a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.user-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.user-area-section
+.user-list {
+    margin-top: 0;
+}
+
+.user-reservation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 22px;
+    border: 1px solid #2d2d36;
+    border-radius: 14px;
+    background: #131318;
+}
+
+.user-reservation-card__main {
+    min-width: 0;
+    flex: 1;
+}
+
+.user-reservation-card__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-reservation-card__top h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.user-reservation-status {
+    padding: 5px 8px;
+    border: 1px solid #3b3a44;
+    border-radius: 999px;
+    color: #95939d;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.05em;
+}
+
+.user-reservation-status--held {
+    border-color:
+            rgba(124, 92, 255, 0.4);
+    color: #b6a3ff;
+}
+
+.user-reservation-status--confirmed {
+    border-color:
+            rgba(100, 211, 153, 0.3);
+    color: #88dcb0;
+}
+
+.user-reservation-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 16px;
+    margin-top: 12px;
+    color: #888690;
+    font-size: 13px;
+}
+
+.user-reservation-card__hold {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    color: #a9a6b1;
+    font-size: 12px;
+}
+
+.user-reservation-card__hold strong {
+    color: #b5a2ff;
+    font-size: 16px;
+    font-variant-numeric:
+            tabular-nums;
+}
+
+.user-area-empty {
+    padding: 26px;
+    border: 1px dashed #303039;
+    border-radius: 12px;
+    color: #777580;
+    text-align: center;
+}
+
+.user-list-skeleton {
+    height: 110px;
+    border-radius: 14px;
+}
+
+.notification-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 10px 14px;
+    border: 1px solid #303039;
+    border-radius: 10px;
+    background: #15151a;
+}
+
+.notification-counter strong {
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.notification-counter span {
+    color: #777580;
+    font-size: 12px;
+}
+
+.notification-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 34px;
+}
+
+.notification-card {
+    display: grid;
+    grid-template-columns:
+    6px 1fr auto;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 20px;
+    border: 1px solid #292932;
+    border-radius: 12px;
+    background: #121217;
+}
+
+.notification-card--unread {
+    border-color:
+            rgba(124, 92, 255, 0.34);
+    background:
+            rgba(124, 92, 255, 0.04);
+}
+
+.notification-card__indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #45434d;
+}
+
+.notification-card--unread
+.notification-card__indicator {
+    background: #8f76ff;
+}
+
+.notification-card__meta {
+    display: flex;
+    gap: 14px;
+    color: #777580;
+    font-size: 11px;
+    font-weight: 650;
+    text-transform: capitalize;
+}
+
+.notification-card__content p {
+    margin: 8px 0 0;
+    color: #cbc9d1;
+    line-height: 1.55;
+}
+
+.notification-read-button {
+    border: 0;
+    background: transparent;
+    color: #a991ff;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.notification-read-button:disabled {
+    opacity: 0.5;
+}
+
+.notification-skeleton {
+    height: 88px;
+    border-radius: 12px;
+}
+
+.account-card {
+    display: grid;
+    grid-template-columns:
+    auto 1fr auto;
+    align-items: center;
+    gap: 30px;
+    margin-top: 36px;
+    padding: 28px;
+    border: 1px solid #2d2d36;
+    border-radius: 16px;
+    background: #131318;
+}
+
+.account-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    border: 1px solid #494358;
+    border-radius: 50%;
+    background: #24202e;
+    color: #ffffff;
+    font-size: 25px;
+    font-weight: 750;
+}
+
+.account-information {
+    display: grid;
+    grid-template-columns:
+    repeat(3, 1fr);
+    gap: 28px;
+}
+
+.account-information > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.account-information span {
+    color: #777580;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.account-information strong {
+    overflow: hidden;
+    color: #dedce3;
+    font-size: 14px;
+    text-overflow: ellipsis;
+}
+
+.system-page {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    min-height:
+            calc(100vh - 76px);
+    text-align: center;
+}
+
+.system-page__code {
+    margin-bottom: 18px;
+    color: #282630;
+    font-size: clamp(
+            100px,
+            20vw,
+            220px
+    );
+    font-weight: 850;
+    line-height: 0.7;
+    letter-spacing: -0.08em;
+}
+
+.system-page h1 {
+    max-width: 700px;
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(
+            36px,
+            5vw,
+            58px
+    );
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.system-page
+> p:not(.eyebrow) {
+    max-width: 520px;
+    margin: 20px 0 28px;
+    color: #92909a;
+    line-height: 1.6;
+}
+
+@media (max-width: 750px) {
+    .user-area-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .user-reservation-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .user-reservation-card
+    .button {
+        width: 100%;
+    }
+
+    .notification-card {
+        grid-template-columns:
+      6px 1fr;
+    }
+
+    .notification-read-button {
+        grid-column: 2;
+        justify-self: start;
+        padding: 0;
+    }
+
+    .account-card {
+        grid-template-columns: 1fr;
+    }
+
+    .account-information {
+        grid-template-columns: 1fr;
+    }
+}

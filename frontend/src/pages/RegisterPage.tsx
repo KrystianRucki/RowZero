@@ -4,14 +4,28 @@ import {
 } from 'react'
 import {
     Link,
+    useLocation,
     useNavigate,
 } from 'react-router-dom'
 import { isApiError } from '../api/apiError'
 import { useAuth } from '../auth/useAuth'
+import '../styles/auth.css'
+
+type AuthLocationState = {
+    from?: string
+}
 
 export function RegisterPage() {
     const navigate = useNavigate()
-    const { register } = useAuth()
+    const location = useLocation()
+
+    const { register } =
+        useAuth()
+
+    const state =
+        location.state as
+            | AuthLocationState
+            | null
 
     const [email, setEmail] =
         useState('')
@@ -39,12 +53,35 @@ export function RegisterPage() {
                 password,
             })
 
+            if (state?.from) {
+                navigate(
+                    state.from,
+                    {
+                        replace: true,
+                    },
+                )
+
+                return
+            }
+
             navigate('/')
         } catch (error) {
             if (isApiError(error)) {
-                setError(error.message)
+                if (
+                    error.fieldErrors.length >
+                    0
+                ) {
+                    setError(
+                        error.fieldErrors[0]
+                            .message,
+                    )
+                } else {
+                    setError(error.message)
+                }
             } else {
-                setError('Unable to register')
+                setError(
+                    'Unable to create account.',
+                )
             }
         } finally {
             setLoading(false)
@@ -52,62 +89,94 @@ export function RegisterPage() {
     }
 
     return (
-        <main>
-            <h1>Register</h1>
+        <section className="auth-page">
+            <div className="auth-card">
+                <div className="auth-card__heading">
+                    <p className="eyebrow">
+                        Join the festival
+                    </p>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">
-                        Email
-                    </label>
+                    <h1>
+                        Create account
+                    </h1>
 
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) =>
-                            setEmail(event.target.value)
-                        }
-                        required
-                    />
+                    <p>
+                        Reserve seats and keep
+                        track of your screenings
+                        in one place.
+                    </p>
                 </div>
 
-                <div>
-                    <label htmlFor="password">
-                        Password
-                    </label>
-
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) =>
-                            setPassword(event.target.value)
-                        }
-                        required
-                    />
-                </div>
-
-                {error && (
-                    <p>{error}</p>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={loading}
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
                 >
-                    {loading
-                        ? 'Creating account...'
-                        : 'Register'}
-                </button>
-            </form>
+                    <div className="auth-field">
+                        <label htmlFor="email">
+                            Email
+                        </label>
 
-            <p>
-                Already registered?{' '}
-                <Link to="/login">
-                    Login
-                </Link>
-            </p>
-        </main>
+                        <input
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(
+                                    event.target.value,
+                                )
+                            }
+                            required
+                        />
+                    </div>
+
+                    <div className="auth-field">
+                        <label htmlFor="password">
+                            Password
+                        </label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            autoComplete="new-password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(
+                                    event.target.value,
+                                )
+                            }
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="auth-error">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="button button--primary auth-submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? 'Creating account...'
+                            : 'Create account'}
+                    </button>
+                </form>
+
+                <p className="auth-switch">
+                    Already have an account?{' '}
+
+                    <Link
+                        to="/login"
+                        state={state}
+                    >
+                        Log in
+                    </Link>
+                </p>
+            </div>
+        </section>
     )
 }
