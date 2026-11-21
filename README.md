@@ -263,16 +263,62 @@ docker compose down -v
 
 Opcji `-v` używaj tylko wtedy, gdy chcesz usunąć wszystkie lokalne dane PostgreSQL i rozpocząć pracę na pustej bazie.
 
+## Dane demonstracyjne
+
+Projekt zawiera gotowy seed demonstracyjny:
+
+```text
+backend/src/main/resources/db/demo/demo-data.sql
+```
+
+Seed jest przeznaczony do lokalnych prezentacji i testów. Czyści dane aplikacyjne, resetuje identyfikatory i wypełnia bazę przykładowym zestawem danych obejmującym:
+
+- konto administratora,
+- dwa konta użytkowników,
+- filmy z danymi TMDB,
+- trzy sale o różnej liczbie miejsc,
+- miejsca przypisane do sal,
+- gotowy repertuar seansów.
+
+### Uruchomienie aplikacji z czystą bazą demonstracyjną
+
+Z katalogu głównego projektu uruchom w PowerShell:
+
+```powershell
+docker compose down -v
+docker compose up -d --build
+$seed = Get-Content .\backend\src\main\resources\db\demo\demo-data.sql -Raw
+$seed | docker compose exec -T database psql -U rowzero -d rowzero
+```
+
+Polecenie `docker compose down -v` usuwa lokalny wolumen PostgreSQL, dlatego cały dotychczasowy lokalny stan bazy zostanie utracony.
+
+Po uruchomieniu kontenerów migracje Flyway tworzą schemat bazy, a następnie `demo-data.sql` wypełnia go danymi demonstracyjnymi.
+
+### Konta demonstracyjne
+
+| Rola | Email | Hasło |
+|---|---|---|
+| Administrator | `admin@rowzero.demo` | `StrongAdminPassword1!2@3#` |
+| Użytkownik | `user1@rowzero.demo` | `StrongPassword1!2@3#` |
+| Użytkownik | `user2@rowzero.demo` | `StrongPassword1!2@3#` |
+
+Seed można uruchomić ponownie na działającej lokalnej bazie. Na początku wykonuje `TRUNCATE ... RESTART IDENTITY CASCADE`, więc usuwa aktualne dane aplikacyjne i odtwarza zestaw demonstracyjny od początku.
+
+Nie należy umieszczać seeda demonstracyjnego w katalogu migracji Flyway. Plik jest uruchamiany ręcznie i nie stanowi części wersjonowania schematu bazy.
+
 ## Pierwsze uruchomienie
 
-Po uruchomieniu aplikacji:
+Po uruchomieniu aplikacji bez seeda demonstracyjnego:
 
 1. Otwórz `http://localhost:5173`.
 2. Zarejestruj konto.
 3. Zaloguj się.
 4. Konto utworzone przez publiczną rejestrację zawsze posiada rolę `USER`.
 
-Aby przygotować konto administratora do lokalnego środowiska demonstracyjnego:
+Jeżeli baza została przygotowana za pomocą `demo-data.sql`, możesz od razu zalogować się jednym z kont demonstracyjnych i pominąć ręczne tworzenie administratora.
+
+Aby przygotować konto administratora ręcznie w lokalnym środowisku bez seeda:
 
 1. Zarejestruj konto, np. `admin@rowzero.local`.
 2. Sprawdź nazwę usługi bazy:
